@@ -32,6 +32,16 @@ describe('GridManager', () => {
       };
     }
     
+    // Mock getBoundingClientRect
+    mockElement.getBoundingClientRect = vi.fn(() => ({
+      width: 280,
+      height: 140,
+      top: 0,
+      left: 0,
+      right: 280,
+      bottom: 140
+    }));
+    
     // Mock getComputedStyle
     const originalGetComputedStyle = window.getComputedStyle;
     window.getComputedStyle = vi.fn((element) => {
@@ -41,7 +51,11 @@ describe('GridManager', () => {
           borderTopWidth: '0px',
           borderLeftWidth: '0px',
           borderRightWidth: '0px',
-          borderBottomWidth: '0px'
+          borderBottomWidth: '0px',
+          paddingTop: '0px',
+          paddingLeft: '0px',
+          paddingRight: '0px',
+          paddingBottom: '0px'
         };
       }
       return originalGetComputedStyle(element);
@@ -71,11 +85,12 @@ describe('GridManager', () => {
       
       const shadowHost = mockElement.querySelector('#wp-rhythm-host');
       expect(shadowHost.style.position).toBe('absolute');
-      // Grid should be positioned to align with padding box (inside border)
-      expect(shadowHost.style.top).toBe('0px'); // border-top (mocked as 0)
-      expect(shadowHost.style.left).toBe('0px'); // border-left (mocked as 0)
-      expect(shadowHost.style.right).toBe('0px'); // border-right (mocked as 0)
-      expect(shadowHost.style.bottom).toBe('0px'); // border-bottom (mocked as 0)
+      // Grid positioned at padding box origin (border edge when border=0)
+      expect(shadowHost.style.top).toBe('0px'); // borderTop
+      expect(shadowHost.style.left).toBe('0px'); // borderLeft
+      // Grid size matches padding box dimensions
+      expect(shadowHost.style.width).toBe('280px'); // rect.width - borders
+      expect(shadowHost.style.height).toBe('140px'); // rect.height - borders
       expect(shadowHost.style.pointerEvents).toBe('none');
       expect(shadowHost.style.zIndex).toBe('999');
     });
@@ -275,9 +290,9 @@ describe('GridManager', () => {
       const shadowHost = mockElement.querySelector('#wp-rhythm-host');
       const style = shadowHost.shadowRoot.querySelector('style');
       
-      // Check for 0deg (horizontal lines) and 90deg (vertical lines)
-      expect(style.textContent).toContain('0deg');
-      expect(style.textContent).toContain('90deg');
+      // Check for to bottom (horizontal lines) and to right (vertical lines)
+      expect(style.textContent).toContain('to bottom');
+      expect(style.textContent).toContain('to right');
     });
   });
 });

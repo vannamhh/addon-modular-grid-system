@@ -145,14 +145,25 @@ class GridManager {
     const borderLeft = parseFloat(computedStyle.borderLeftWidth);
     const borderRight = parseFloat(computedStyle.borderRightWidth);
     const borderBottom = parseFloat(computedStyle.borderBottomWidth);
+    const paddingLeft = parseFloat(computedStyle.paddingLeft);
+    const paddingRight = parseFloat(computedStyle.paddingRight);
+    const paddingTop = parseFloat(computedStyle.paddingTop);
+    const paddingBottom = parseFloat(computedStyle.paddingBottom);
     
-    // Position: Start at border edge, shift inward by border width
+    // Get element's border-box dimensions
+    const rect = this.targetElement.getBoundingClientRect();
+    
+    // Calculate padding box dimensions (border-box minus borders)
+    const paddingBoxWidth = rect.width - borderLeft - borderRight;
+    const paddingBoxHeight = rect.height - borderTop - borderBottom;
+    
+    // Position: Start at border edge (top-left corner of padding box)
     host.style.top = `${borderTop}px`;
     host.style.left = `${borderLeft}px`;
     
-    // Size: Constrain to padding box dimensions (element width/height minus borders)
-    host.style.right = `${borderRight}px`;
-    host.style.bottom = `${borderBottom}px`;
+    // Size: Explicit width/height to match padding box exactly
+    host.style.width = `${paddingBoxWidth}px`;
+    host.style.height = `${paddingBoxHeight}px`;
     
     return host;
   }
@@ -188,12 +199,12 @@ class GridManager {
         inset: 0;
         background-image:
           repeating-linear-gradient(
-            0deg,
+            to bottom,
             ${GRID_COLOR} 0 ${LINE_WIDTH}px,
             transparent ${LINE_WIDTH}px ${GRID_SIZE}px
           ),
           repeating-linear-gradient(
-            90deg,
+            to right,
             ${GRID_COLOR} 0 ${LINE_WIDTH}px,
             transparent ${LINE_WIDTH}px ${GRID_SIZE}px
           );
