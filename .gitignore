@@ -1,4 +1,21 @@
-.bmad
-.git
-.github
-.vscode
+# Build output
+dist/
+node_modules/
+
+# System files
+.DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+
+# BMAD artifacts (keep in repo)
+# .bmad/
+
+# Git internals
+.git/

@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background (Optional for dark mode visibility, remove for transparent) -->
+    <rect width="128" height="128" rx="24" fill="#0F172A"/>
+    
+    <!-- The Grid Structure -->
+    <path d="M16 40H112" stroke="#00FFFF" stroke-width="2" stroke-opacity="0.5"/>
+    <path d="M16 64H112" stroke="#00FFFF" stroke-width="2" stroke-opacity="0.5"/>
+    <path d="M16 88H112" stroke="#00FFFF" stroke-width="2" stroke-opacity="0.5"/>
+    <path d="M40 16V112" stroke="#00FFFF" stroke-width="2" stroke-opacity="0.5"/>
+    <path d="M64 16V112" stroke="#00FFFF" stroke-width="2" stroke-opacity="0.5"/>
+    <path d="M88 16V112" stroke="#00FFFF" stroke-width="2" stroke-opacity="0.5"/>
+    
+    <!-- Outer Container Highlight -->
+    <rect x="8" y="8" width="112" height="112" rx="16" stroke="#00FFFF" stroke-width="6"/>
+    
+    <!-- The "Inspector" Lens/Target -->
+    <circle cx="64" cy="64" r="16" fill="#FF00FF"/>
+    <circle cx="64" cy="64" r="28" stroke="#FF00FF" stroke-width="2" stroke-dasharray="6 6"/>
+</svg>

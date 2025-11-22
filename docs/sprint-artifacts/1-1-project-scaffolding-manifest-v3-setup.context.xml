@@ -1,0 +1,119 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>epic-1</epicId>
+    <storyId>1-1</storyId>
+    <title>Project Scaffolding &amp; Manifest V3 Setup</title>
+    <status>drafted</status>
+    <generatedAt>22-11-2025</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-1-project-scaffolding-manifest-v3-setup.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Developer</asA>
+    <iWant>a functional extension build system using Vite and Manifest V3</iWant>
+    <soThat>I can develop the extension according to modern standards with hot module reload and automated bundling</soThat>
+    <tasks>
+      - [ ] **Task 1: Initialize Project with Vite and Dependencies** (AC: #1)
+      - [ ] **Task 2: Create Project Directory Structure** (AC: #1)
+      - [ ] **Task 3: Implement Manifest V3 Configuration** (AC: #1, #2)
+      - [ ] **Task 4: Implement Background Service Worker Stub** (AC: #2)
+      - [ ] **Task 5: Implement Content Script Entry Point** (AC: #4)
+      - [ ] **Task 6: Implement Minimal Popup UI** (AC: #3)
+      - [ ] **Task 7: Configure Vite Build Scripts** (AC: #1)
+      - [ ] **Task 8: Load and Test Extension in Chrome** (AC: #2, #3, #4)
+      - [ ] **Task 9: Write Unit Tests for Initialization** (AC: #4)
+      - [ ] **Task 10: Documentation and Finalization** (All ACs)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. **AC1-Build**: Running `npm run build` generates a `dist/` folder containing valid `manifest.json` (Manifest V3 schema) and bundled JavaScript files for background service worker and content script
+    2. **AC2-Load**: The extension loads into Chrome Developer Mode (chrome://extensions) without console errors
+    3. **AC3-UI**: The extension has a simple Popup or Toolbar Icon that functions and is clickable
+    4. **AC4-Init**: Content Script runs on any web page and logs "WP Inspector Ready" to the console
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation &amp; Core Grid Injection</title>
+        <section>Dependencies and Integrations</section>
+        <snippet>Defines build tools (Vite, @crxjs/vite-plugin) and runtime constraints (Vanilla JS, Manifest V3).</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation &amp; Core Grid Injection</title>
+        <section>Detailed Design</section>
+        <snippet>Outlines the project structure and module responsibilities (InspectorController, ElementSelector, GridManager).</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>Tech Stack</section>
+        <snippet>Specifies Vite, Vanilla JS, and Manifest V3 as the core technology stack.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>Project Structure</section>
+        <snippet>Provides the directory layout for src/background, src/content, src/popup.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- No existing code artifacts for scaffolding story -->
+    </code>
+    <dependencies>
+      <ecosystem name="npm">
+        <package name="vite" version="^5.0.0" />
+        <package name="@crxjs/vite-plugin" version="^2.0.0" />
+        <package name="vitest" version="^1.0.0" />
+        <package name="jsdom" version="^23.0.0" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture</type>
+      <description>Must use Manifest V3 standards (service worker background, declarative permissions).</description>
+    </constraint>
+    <constraint>
+      <type>Tech Stack</type>
+      <description>Pure Vanilla JS (ES2022+) for runtime code. No frameworks like React/Vue.</description>
+    </constraint>
+    <constraint>
+      <type>Security</type>
+      <description>Content Security Policy: No inline scripts. All JS must be externalized.</description>
+    </constraint>
+    <constraint>
+      <type>Structure</type>
+      <description>Follow defined directory structure: src/background, src/content, src/popup.</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>chrome.runtime.onInstalled</name>
+      <kind>Chrome API Event</kind>
+      <signature>chrome.runtime.onInstalled.addListener(callback)</signature>
+      <path>src/background/index.js</path>
+    </interface>
+    <interface>
+      <name>chrome.tabs</name>
+      <kind>Chrome API Permission</kind>
+      <signature>activeTab permission in manifest</signature>
+      <path>src/manifest.js</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Use Vitest with JSDOM environment. Tests should verify initialization logic without browser dependencies where possible.</standards>
+    <locations>tests/</locations>
+    <ideas>
+      <idea>Verify content script logs "WP Inspector Ready" on load.</idea>
+      <idea>Verify manifest.json generation produces valid JSON.</idea>
+    </ideas>
+  </tests>
+</story-context>

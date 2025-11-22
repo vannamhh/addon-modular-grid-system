@@ -1,0 +1,64 @@
+/* Popup Styles - WP 14px Rhythm Inspector */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  width: 280px;
+  min-height: 120px;
+  background: #ffffff;
+}
+
+.popup-container {
+  padding: 16px;
+}
+
+h1 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.toggle-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: #00FFFF;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: #00CCCC;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.3);
+}
+
+.toggle-btn:active {
+  transform: translateY(0);
+}
+
+.status {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.status span {
+  font-weight: 600;
+  color: #999;
+}
+
+.status span.active {
+  color: #00FFFF;
+}

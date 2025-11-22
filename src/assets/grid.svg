@@ -1,0 +1,13 @@
+<svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            .grid-line { stroke: #00FFFF; stroke-opacity: 0.3; stroke-width: 1px; }
+        </style>
+    </defs>
+    <!-- 
+        We draw lines at the top and left. 
+        When tiled, this creates the full grid.
+    -->
+    <path class="grid-line" d="M0 0H14" /> <!-- Top horizontal -->
+    <path class="grid-line" d="M0 0V14" /> <!-- Left vertical -->
+</svg>
