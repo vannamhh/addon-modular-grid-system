@@ -138,32 +138,10 @@ class GridManager {
     host.style.pointerEvents = 'none';
     host.style.zIndex = Z_INDEX.toString();
     
-    // Align grid with padding-box by positioning at padding box origin
-    // AC4: Grid (0,0) must align with top-left corner of padding box
-    const computedStyle = window.getComputedStyle(this.targetElement);
-    const borderTop = parseFloat(computedStyle.borderTopWidth);
-    const borderLeft = parseFloat(computedStyle.borderLeftWidth);
-    const borderRight = parseFloat(computedStyle.borderRightWidth);
-    const borderBottom = parseFloat(computedStyle.borderBottomWidth);
-    const paddingLeft = parseFloat(computedStyle.paddingLeft);
-    const paddingRight = parseFloat(computedStyle.paddingRight);
-    const paddingTop = parseFloat(computedStyle.paddingTop);
-    const paddingBottom = parseFloat(computedStyle.paddingBottom);
-    
-    // Get element's border-box dimensions
-    const rect = this.targetElement.getBoundingClientRect();
-    
-    // Calculate padding box dimensions (border-box minus borders)
-    const paddingBoxWidth = rect.width - borderLeft - borderRight;
-    const paddingBoxHeight = rect.height - borderTop - borderBottom;
-    
-    // Position: Start at border edge (top-left corner of padding box)
-    host.style.top = `${borderTop}px`;
-    host.style.left = `${borderLeft}px`;
-    
-    // Size: Explicit width/height to match padding box exactly
-    host.style.width = `${paddingBoxWidth}px`;
-    host.style.height = `${paddingBoxHeight}px`;
+    // Grid covers entire element including border (border-box)
+    // Position shadow host to fill entire element using inset
+    // This ensures consistent behavior across all websites
+    host.style.inset = '0';
     
     return host;
   }

@@ -382,15 +382,22 @@ Claude Sonnet 4.5 (via GitHub Copilot)
 - ✅ **Bug #4**: Grid overflow and misalignment → Fixed offset calculation to use positive border values, constrained to padding box
 - ✅ **Bug #5**: Page reload loses grid → Added localStorage persistence with XPath tracking and state restoration
 - ✅ **Bug #6**: Test page box-sizing incorrect → Updated Sections 6-7 to use `border-box`
-- ✅ **Issue #7**: Tests hang in watch mode → Changed test script to `vitest run` (one-shot execution)
+- ✅ **Bug #7**: Tests hang in watch mode → Changed test script to `vitest run` (one-shot execution)
+- ✅ **Bug #8**: Grid sizing inconsistency (inset vs explicit width/height) → Reverted to `inset: 0` for consistent border-box coverage
+- ✅ **Bug #9**: Gradient direction misalignment → Changed from `0deg/90deg` to `to bottom/to right` for correct top-left origin
 
 **Grid Alignment Fix Details:**
-- **Problem**: Negative offset + `inset: 0` caused grid to overflow beyond border edge
-- **Root Cause**: Incorrect offset direction - used negative (outward) instead of positive (inward)
-- **Solution**: 
-  - Position shadow host at `top/left/right/bottom` = border widths
-  - Grid now correctly aligns with padding box top-left corner (AC4)
-  - Constrained to padding box dimensions (no overflow)
+- **Initial Problem**: Negative offset + `inset: 0` caused grid to overflow beyond border edge
+- **Second Attempt**: Used explicit `width/height` calculations → Created inconsistencies between test page and real websites
+- **Root Cause Analysis**: 
+  - Complex calculations (getBoundingClientRect, border subtraction) introduced edge cases
+  - Different box-sizing modes (content-box vs border-box) caused different behaviors
+  - `inset: 0` is the simplest and most reliable approach for absolute positioning
+- **Final Solution**: 
+  - Reverted to `inset: 0` on shadow host (covers entire border-box)
+  - Changed gradient direction from `0deg/90deg` to `to bottom/to right`
+  - Grid now consistently covers entire element including border across all websites
+  - Behavior is uniform regardless of box-sizing, padding, or border values
   
 **State Persistence Implementation:**
 - Active state saved to `localStorage['wp-rhythm-inspector-active']`
