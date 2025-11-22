@@ -1,0 +1,259 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>3</storyId>
+    <title>Grid Overlay Injection (The "Lock")</title>
+    <status>drafted</status>
+    <generatedAt>22-11-2025</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-3-grid-overlay-injection-the-lock.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>User</asA>
+    <iWant>click on a highlighted element to "pin" (lock) the 14px grid to it</iWant>
+    <soThat>I can inspect alignment of text and UI elements against the rhythm grid</soThat>
+    <tasks>
+      - Task 1: Create GridManager Module (AC: #1, #2, #3, #4, #5)
+      - Task 2: Shadow DOM Creation and Styling (AC: #2, #3)
+      - Task 3: Element Positioning Adjustment (AC: #4)
+      - Task 4: Grid Pattern CSS Implementation (AC: #3)
+      - Task 5: Single Instance Enforcement (AC: #5)
+      - Task 6: ElementSelector Click Handling Integration (AC: #1)
+      - Task 7: InspectorController Grid Lock Orchestration (AC: #1, #5)
+      - Task 8: Write Unit Tests for GridManager (AC: All)
+      - Task 9: Update InspectorController Tests (AC: #1, #5)
+      - Task 10: Update ElementSelector Tests (AC: #1)
+      - Task 11: Integration Test - Grid Lock Flow (AC: All) - MANUAL TESTING REQUIRED
+      - Task 12: CSS Isolation Validation (AC: #2) - MANUAL TESTING REQUIRED
+      - Task 13: Visual Accuracy Validation (AC: #3, #4) - MANUAL TESTING REQUIRED
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    AC1-Click: A click event on a highlighted element triggers grid generation
+    AC2-Shadow: The grid is rendered inside a Shadow DOM host attached to (or overlaying) the target element to ensure style isolation
+    AC3-Pattern: The Grid Pattern consists of 14px × 14px squares using CSS repeating gradients
+    AC4-Origin: The Grid Origin (0,0) must align exactly with the top-left corner of the target element's Padding Box
+    AC5-Single: If another grid is already visible elsewhere, it must be removed before the new grid appears (Single Instance Rule)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Detailed Design → GridManager Module</section>
+        <snippet>GridManager module manages Shadow DOM lifecycle for grid overlay; handles injection/removal of grid pattern; adjusts element positioning if static. Public interface includes inject(targetElement), remove(), isActive(), and getGridHost() methods.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Data Models and Contracts → Shadow DOM Structure</section>
+        <snippet>Shadow host div with position:absolute, inset:0, pointer-events:none, z-index:9999 contains open shadow root. Grid pattern uses repeating-linear-gradient for 14px squares with cyan color and 35% opacity.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Workflows → Element Discovery and Grid Lock (Steps 8-14)</section>
+        <snippet>User clicks element → ElementSelector callback fires → InspectorController.lockElement() → checks for existing grid → GridManager.remove() if needed → GridManager.inject(element) → verify positioning → create shadow host with grid pattern → ElementSelector.disable() to stop hover.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Acceptance Criteria AC4, AC5</section>
+        <snippet>AC4: Grid origin must align with padding box top-left corner. AC5: Single Instance Rule - only one grid visible at a time, previous grid removed before new injection.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>2. High-Level Architecture → Key Technical Decisions</section>
+        <snippet>Direct Child Injection strategy: Grid injected as absolute-positioned child of target element (inset:0) for automatic scroll sync. Shadow DOM isolation for all UI. Pointer Events Passthrough with pointer-events:none. Single Instance Rule enforced.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>4.3 GridManager Module</section>
+        <snippet>GridManager responsibilities: inject(targetElement) creates Shadow Host and Grid, remove() cleans up Shadow Host, isActive() checks display state, getGridHost() returns shadow host reference. Handles static positioning edge case by temporarily setting position:relative.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>5.1 Activation & Locking Flow (Sequence Diagram)</section>
+        <snippet>Lock flow: User clicks element → Selector fires callback → GridMgr.lock() → Check element position → If static, set relative → Append Shadow Host → Display 14px Grid. Single instance enforcement: check and remove existing grid first.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>8. Risks & Limitations</section>
+        <snippet>RISK-1: Layout Shift from position adjustment (static→relative) may cause minor shifts. RISK-2: Z-Index War - grid may be obscured by child elements with higher z-index in same stacking context. Both are accepted limitations of Direct Child Injection strategy.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>2.1 Functional Requirements → FR2 Grid Visualization</section>
+        <snippet>Grid must be 14px x 14px fixed squares with 1px wide lines, high-contrast color (Cyan/Magenta) at 30-50% opacity. Grid must scroll naturally with element content using absolute positioning relative to container.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>6.1.3 Story 1.3 Epic Details</section>
+        <snippet>User clicks highlighted element to "pin" 14px grid. Grid rendered in Shadow DOM, pattern is 14px squares, origin aligns to padding box, single instance constraint enforced (previous grid removed).</snippet>
+      </doc>
+    </docs>
+    
+    <code>
+      <artifact>
+        <path>src/content/modules/InspectorController.js</path>
+        <kind>controller</kind>
+        <symbol>InspectorController</symbol>
+        <lines>1-74</lines>
+        <reason>Central orchestrator that needs to integrate GridManager. Contains lockElement() and unlock() stubs that must call GridManager methods. Must coordinate ElementSelector disable/enable on lock/unlock.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/ElementSelector.js</path>
+        <kind>service</kind>
+        <symbol>ElementSelector</symbol>
+        <lines>1-169</lines>
+        <reason>Handles hover detection and highlighting. Needs click event listener added and onElementSelected callback implementation to trigger grid lock. Must be disabled when grid is locked.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/index.js</path>
+        <kind>entry</kind>
+        <symbol>initializeInspector</symbol>
+        <lines>1-38</lines>
+        <reason>Content script entry point. No changes needed but shows message handling pattern and initialization flow for reference.</reason>
+      </artifact>
+      <artifact>
+        <path>tests/content/modules/InspectorController.spec.js</path>
+        <kind>test</kind>
+        <symbol>InspectorController tests</symbol>
+        <lines>all</lines>
+        <reason>Existing test suite that needs new tests for lockElement() and unlock() integration with GridManager. Pattern for mocking and assertions established here.</reason>
+      </artifact>
+      <artifact>
+        <path>tests/content/modules/ElementSelector.spec.js</path>
+        <kind>test</kind>
+        <symbol>ElementSelector tests</symbol>
+        <lines>all</lines>
+        <reason>Existing test suite that needs new tests for click handling and onElementSelected callback. Shows patterns for event mocking and DOM manipulation testing.</reason>
+      </artifact>
+    </code>
+    
+    <dependencies>
+      <node>
+        <package name="vite" version="^5.4.21" type="devDependency">Build tool for bundling extension code</package>
+        <package name="@crxjs/vite-plugin" version="^2.2.1" type="devDependency">Chrome Extension plugin for Vite, handles manifest generation</package>
+        <package name="vitest" version="^1.6.1" type="devDependency">Unit testing framework for GridManager and integration tests</package>
+        <package name="jsdom" version="^23.2.0" type="devDependency">DOM simulation for unit tests, required for Shadow DOM API mocking</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Grid size is hardcoded to 14px (GRID_SIZE constant)
+    - Grid color is cyan #00FFFF with 35% opacity (GRID_COLOR, GRID_OPACITY constants)
+    - Grid line width is 1px (LINE_WIDTH constant)
+    - Shadow DOM must use open mode for debuggability: attachShadow({mode: 'open'})
+    - Shadow host must have id="wp-rhythm-host" for DOM inspection
+    - Shadow host positioning: position:absolute, inset:0, pointer-events:none, z-index:9999
+    - If target element has position:static, temporarily set position:relative via CSS class
+    - Store original position value to restore on cleanup
+    - Grid origin (0,0) must align to padding box top-left corner (not border or margin)
+    - Single instance rule: Only one grid visible at a time, remove previous before creating new
+    - All grid styles scoped within shadow root (CSS isolation)
+    - Grid pattern created using CSS repeating-linear-gradient (no SVG or Canvas)
+    - GridManager must implement: inject(targetElement), remove(), isActive(), getGridHost()
+    - ElementSelector must implement: onElementSelected(callback) for click handling
+    - InspectorController lockElement() must: disable ElementSelector, call GridManager.inject(), store lockedElement
+    - InspectorController unlock() must: call GridManager.remove(), enable ElementSelector, clear lockedElement
+    - Use requestAnimationFrame pattern established in ElementSelector for any animation-based logic
+    - Follow JSDoc comment style: @param {Type} name - Description, @returns {Type} Description
+    - Export singleton pattern: export default new ClassName()
+    - All module files in src/content/modules/ directory
+    - All test files in tests/content/modules/ directory with .spec.js extension
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GridManager.inject</name>
+      <kind>method</kind>
+      <signature>inject(targetElement: HTMLElement): void</signature>
+      <path>src/content/modules/GridManager.js (to be created)</path>
+    </interface>
+    <interface>
+      <name>GridManager.remove</name>
+      <kind>method</kind>
+      <signature>remove(): void</signature>
+      <path>src/content/modules/GridManager.js (to be created)</path>
+    </interface>
+    <interface>
+      <name>GridManager.isActive</name>
+      <kind>method</kind>
+      <signature>isActive(): boolean</signature>
+      <path>src/content/modules/GridManager.js (to be created)</path>
+    </interface>
+    <interface>
+      <name>GridManager.getGridHost</name>
+      <kind>method</kind>
+      <signature>getGridHost(): HTMLElement | null</signature>
+      <path>src/content/modules/GridManager.js (to be created)</path>
+    </interface>
+    <interface>
+      <name>ElementSelector.onElementSelected</name>
+      <kind>method</kind>
+      <signature>onElementSelected(callback: (element: HTMLElement) => void): void</signature>
+      <path>src/content/modules/ElementSelector.js (existing, needs implementation)</path>
+    </interface>
+    <interface>
+      <name>InspectorController.lockElement</name>
+      <kind>method</kind>
+      <signature>lockElement(element: HTMLElement): void</signature>
+      <path>src/content/modules/InspectorController.js (existing stub, needs implementation)</path>
+    </interface>
+    <interface>
+      <name>InspectorController.unlock</name>
+      <kind>method</kind>
+      <signature>unlock(): void</signature>
+      <path>src/content/modules/InspectorController.js (existing stub, needs implementation)</path>
+    </interface>
+    <interface>
+      <name>Chrome Extension Message: TOGGLE_INSPECTOR</name>
+      <kind>message</kind>
+      <signature>{ type: 'TOGGLE_INSPECTOR', payload: { active: boolean } }</signature>
+      <path>src/content/index.js (existing, no changes needed)</path>
+    </interface>
+    <interface>
+      <name>Shadow DOM Structure</name>
+      <kind>DOM structure</kind>
+      <signature>&lt;div id="wp-rhythm-host"&gt;#shadow-root(open)&lt;style&gt;...&lt;/style&gt;&lt;div class="grid-pattern"&gt;&lt;/div&gt;&lt;/div&gt;</signature>
+      <path>Generated by GridManager.inject()</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Use Vitest with JSDOM for unit tests. Mock browser APIs: attachShadow(), getComputedStyle(), getBoundingClientRect(), appendChild(). Follow established pattern from Story 1.2 tests: beforeEach for setup, afterEach for cleanup, descriptive test names. Target 80%+ code coverage for new modules. Manual integration testing required for visual validation and Shadow DOM inspection in real Chrome browser.
+    </standards>
+    
+    <locations>
+      tests/content/modules/GridManager.spec.js (to be created)
+      tests/content/modules/InspectorController.spec.js (existing, needs updates)
+      tests/content/modules/ElementSelector.spec.js (existing, needs updates)
+    </locations>
+    
+    <ideas>
+      AC1-Click: Test ElementSelector click handler invokes onElementSelected callback with correct element. Test click on non-highlighted element is ignored. Test InspectorController.lockElement() is called when element selected.
+      
+      AC2-Shadow: Test GridManager.inject() creates shadow host with id="wp-rhythm-host". Test attachShadow({mode: 'open'}) is called. Test shadow root contains style tag and grid-pattern div. Test CSS isolation: page styles don't affect grid, grid styles don't affect page.
+      
+      AC3-Pattern: Test grid CSS contains repeating-linear-gradient with 14px intervals. Test grid color is #00FFFF. Test grid opacity is 0.35. Test grid-pattern div has correct CSS classes.
+      
+      AC4-Origin: Test grid aligns to padding box origin (not border). Test positioning calculations with elements having padding. Test positioning calculations with elements having border. Test grid uses inset:0 positioning relative to target element.
+      
+      AC5-Single: Test calling inject() twice removes first grid before creating second. Test GridManager.isActive() returns true after inject(), false after remove(). Test currentGridHost reference is updated correctly. Test only one shadow host exists in DOM at a time.
+      
+      Integration Tests (Manual): Load extension in Chrome, activate, hover element, click to lock grid. Use DevTools to inspect shadow root structure. Use Ruler tool to verify 14px squares. Test on element with position:static (verify temporary position:relative). Test clicking second element removes first grid. Test grid scrolls with target element. Test pointer-events passthrough on buttons beneath grid.
+    </ideas>
+  </tests>
+</story-context>

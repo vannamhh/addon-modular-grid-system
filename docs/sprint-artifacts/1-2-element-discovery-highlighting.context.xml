@@ -1,0 +1,315 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>2</storyId>
+    <title>Element Discovery & Highlighting</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-22</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-2-element-discovery-highlighting.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>User</asA>
+    <iWant>see a highlight effect when hovering over page elements</iWant>
+    <soThat>I know exactly which element will be selected for the grid overlay</soThat>
+    <tasks>
+      - Task 1: Implement Message Handling in Content Script (AC: All - Foundation)
+        - 1.1: Add chrome.runtime.onMessage listener in src/content/index.js
+        - 1.2: Handle TOGGLE_INSPECTOR message type with {active: boolean} payload
+        - 1.3: Initialize InspectorController singleton on content script load
+        - 1.4: Call InspectorController.setActive(active) when toggle message received
+        - 1.5: Add error handling for invalid message types
+      
+      - Task 2: Create InspectorController Module (AC: All - Orchestration)
+        - 2.1: Create src/content/modules/InspectorController.js as singleton class
+        - 2.2: Implement init() method to initialize ElementSelector module
+        - 2.3: Implement setActive(boolean) method to enable/disable ElementSelector
+        - 2.4: Add state management: isActive and lockedElement properties
+        - 2.5: Export singleton instance as default export
+        - 2.6: Add JSDoc comments for all public methods
+      
+      - Task 3: Create ElementSelector Module (AC: #1, #2, #3, #4)
+        - 3.1: Create src/content/modules/ElementSelector.js class
+        - 3.2: Implement enable() method to start hover detection
+        - 3.3: Implement disable() method to stop hover detection and clear highlights
+        - 3.4: Add throttled mousemove event listener using requestAnimationFrame
+        - 3.5: Implement element filtering logic (check isElementValid() helper)
+        - 3.6: Apply blue outline style to valid hovered elements
+        - 3.7: Store reference to currently highlighted element
+        - 3.8: Implement clearHighlight() to remove outline from previous element
+      
+      - Task 4: Implement Element Validation Logic (AC: #4)
+        - 4.1: Create isElementValid(element) helper in ElementSelector
+        - 4.2: Check display computed style is not none
+        - 4.3: Check visibility computed style is not hidden
+        - 4.4: Check opacity computed style is not 0
+        - 4.5: Get bounding rect and verify width > 0 and height > 0
+        - 4.6: Return false if element is the shadow host itself (avoid recursion)
+      
+      - Task 5: Implement Hover Outline Styling (AC: #1, #2)
+        - 5.1: Define outline constants: OUTLINE_COLOR = '#0080FF', OUTLINE_WIDTH = '2px'
+        - 5.2: Apply inline styles: element.style.outline = '2px solid #0080FF'
+        - 5.3: Set element.style.outlineOffset = '0px' for precise alignment
+        - 5.4: Store original outline styles before applying (for restoration)
+        - 5.5: Restore original outline styles in clearHighlight()
+      
+      - Task 6: Implement requestAnimationFrame Throttling (AC: #3)
+        - 6.1: Create rafId property to store animation frame ID
+        - 6.2: In mousemove handler, check if rafId is null before scheduling
+        - 6.3: Use requestAnimationFrame(() => { handleHover(event); rafId = null; })
+        - 6.4: Cancel pending animation frame in disable() using cancelAnimationFrame(rafId)
+        - 6.5: Add comment explaining throttling prevents >60fps event processing
+      
+      - Task 7: Write Unit Tests for ElementSelector (AC: All)
+        - 7.1: Create tests/content/modules/ElementSelector.spec.js
+        - 7.2: Test enable() registers mousemove listener
+        - 7.3: Test disable() removes listener and clears highlights
+        - 7.4: Test isElementValid() filters hidden/zero-size elements
+        - 7.5: Test outline styles are applied correctly on hover
+        - 7.6: Test rAF throttling (verify only one frame scheduled at a time)
+        - 7.7: Mock getBoundingClientRect() and getComputedStyle() for deterministic tests
+      
+      - Task 8: Write Unit Tests for InspectorController (AC: All)
+        - 8.1: Create tests/content/modules/InspectorController.spec.js
+        - 8.2: Test singleton pattern (multiple imports return same instance)
+        - 8.3: Test init() creates ElementSelector instance
+        - 8.4: Test setActive(true) calls ElementSelector.enable()
+        - 8.5: Test setActive(false) calls ElementSelector.disable()
+        - 8.6: Test state changes are tracked in isActive property
+      
+      - Task 9: Integration Test - Message Flow (AC: All)
+        - 9.1: Create test page HTML with nested div structure
+        - 9.2: Load extension in Chrome Developer Mode
+        - 9.3: Click extension icon to activate (popup sends message)
+        - 9.4: Verify console logs "Inspector activated" (or similar)
+        - 9.5: Hover over test page elements and verify blue outline appears
+        - 9.6: Move mouse rapidly over 20+ nested elements
+        - 9.7: Open DevTools Performance tab and verify frame rate stays above 55fps
+        - 9.8: Test hover on hidden elements (display:none) - should be ignored
+      
+      - Task 10: Performance Validation (AC: #3)
+        - 10.1: Create stress test page with 100+ nested divs
+        - 10.2: Activate extension and start DevTools Performance recording
+        - 10.3: Hover rapidly across elements for 10 seconds
+        - 10.4: Stop recording and analyze frame rate chart
+        - 10.5: Verify no frame drops below 55fps (target 60fps with 5fps buffer)
+        - 10.6: Check for long tasks (>50ms) in Performance profile - should be zero
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    AC1-Hover: Hovering over a DOM element displays a 2px blue outline (#0080FF) around it
+    
+    AC2-Clear: Moving the mouse away immediately removes the blue outline
+    
+    AC3-Performance: Hovering rapidly over nested elements shows smooth transitions without frame drops (60fps validated via DevTools Performance profiler)
+    
+    AC4-Filter: Hidden elements (display: none, visibility: hidden) and zero-dimension elements are ignored during hover detection
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Detailed Design → ElementSelector Module</section>
+        <snippet>ElementSelector manages element discovery and highlighting; handles mousemove events with rAF throttling; captures click events for element selection. Public interface: enable(), disable(), highlightElement(), clearHighlight(), onElementSelected().</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Detailed Design → InspectorController Module</section>
+        <snippet>InspectorController is the central orchestrator singleton managing global state (active/inactive, locked element) and coordinating lifecycle of child modules. Interface: init(), setActive(active), lockElement(element), unlock(), destroy().</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Non-Functional Requirements → Performance</section>
+        <snippet>Target: 60fps during hover interactions. All mousemove event handlers must be throttled using requestAnimationFrame to prevent frame drops. Element highlight application should complete within 16ms per frame.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundation & Core Grid Injection</title>
+        <section>Acceptance Criteria AC3</section>
+        <snippet>Element Hover Highlighting: When extension is active, hovering over any DOM element displays a 2px blue outline. Hovering rapidly over nested elements shows smooth transitions without frame drops (60fps validated via DevTools).</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>Component Architecture → ElementSelector</section>
+        <snippet>ElementSelector manages element highlighting on hover. Responsibility: Listen for mousemove (when unlocked), draw blue outline around event.target, handle click to select element and trigger GridManager. Optimization: Use requestAnimationFrame to throttle mousemove events.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>Component Architecture → InspectorController</section>
+        <snippet>InspectorController (Singleton) is the application brain. Responsibility: Initialize child modules, listen for messages from Background/Popup, manage global state (Active/Inactive). State: isActive (boolean), lockedElement (HTMLElement).</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>Architectural Goals</section>
+        <snippet>Performance (60fps): Ensure smooth scrolling while the grid is active. Non-intrusive: Ensure mouse events pass through the grid and CSS is isolated from the host page. Simplicity: Use pure Vanilla JS, avoiding heavy runtime frameworks.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/prd/2. Requirements.md</path>
+        <title>Requirements</title>
+        <section>FR1 - Targeted Activation</section>
+        <snippet>The user activates the extension and hovers to highlight DOM elements. Upon clicking an element, a 14px grid is pinned to that element, resetting origin coordinates (0,0) to the top-left corner of the element's padding-box.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/prd/2. Requirements.md</path>
+        <title>Requirements</title>
+        <section>NFR1 - Performance</section>
+        <snippet>Measurement logic must remain idle by default. When active (Alt key held), mousemove event handlers must be throttled using requestAnimationFrame to ensure optimal frame rates.</snippet>
+      </artifact>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/content/index.js</path>
+        <kind>entry point</kind>
+        <symbol>initializeInspector</symbol>
+        <lines>3-20</lines>
+        <reason>Content script entry point where message listener and InspectorController initialization will be added</reason>
+      </artifact>
+      <artifact>
+        <path>src/popup/index.js</path>
+        <kind>popup script</kind>
+        <symbol>toggleExtension</symbol>
+        <lines>all</lines>
+        <reason>Popup already sends TOGGLE_INSPECTOR message that content script needs to handle</reason>
+      </artifact>
+      <artifact>
+        <path>tests/content/index.spec.js</path>
+        <kind>test</kind>
+        <symbol>existing tests</symbol>
+        <lines>all</lines>
+        <reason>Existing test patterns to follow for new module tests (Vitest + JSDOM setup)</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/</path>
+        <kind>directory</kind>
+        <symbol>N/A</symbol>
+        <lines>N/A</lines>
+        <reason>Target directory for new InspectorController.js and ElementSelector.js modules</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="vite" version="^5.4.21" />
+        <package name="@crxjs/vite-plugin" version="^2.2.1" />
+        <package name="vitest" version="^1.6.1" />
+        <package name="jsdom" version="^23.2.0" />
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Performance: 60fps target during hover interactions - use requestAnimationFrame for throttling mousemove handlers
+    - Element highlight must complete within 16ms per frame
+    - Element filtering: Ignore display:none, visibility:hidden, opacity:0, zero-dimension elements
+    - Shadow host detection: Avoid highlighting element with id='wp-rhythm-host' to prevent recursion
+    - Outline styling constants: OUTLINE_COLOR = '#0080FF', OUTLINE_WIDTH = '2px', OUTLINE_OFFSET = '0px'
+    - Testing: Use Vitest + JSDOM, follow patterns from tests/content/index.spec.js
+    - Coding standards: No var (use const/let), ES modules with default exports, JSDoc comments required
+    - Module pattern: Singleton for InspectorController, class-based for ElementSelector
+    - Message bridge: Close gap from Story 1.1 by implementing chrome.runtime.onMessage listener
+  </constraints>
+  
+  <interfaces>
+    <interface>
+      <name>Chrome Extension Messaging API</name>
+      <kind>Extension API</kind>
+      <signature>chrome.runtime.onMessage.addListener((message, sender, sendResponse) => { ... })</signature>
+      <path>Browser API</path>
+    </interface>
+    <interface>
+      <name>TOGGLE_INSPECTOR Message</name>
+      <kind>Message payload</kind>
+      <signature>{ type: 'TOGGLE_INSPECTOR', payload: { active: boolean } }</signature>
+      <path>src/popup/index.js → src/content/index.js</path>
+    </interface>
+    <interface>
+      <name>InspectorController.init()</name>
+      <kind>Module method</kind>
+      <signature>init(): void - Initialize ElementSelector module</signature>
+      <path>src/content/modules/InspectorController.js</path>
+    </interface>
+    <interface>
+      <name>InspectorController.setActive()</name>
+      <kind>Module method</kind>
+      <signature>setActive(active: boolean): void - Toggle extension active state</signature>
+      <path>src/content/modules/InspectorController.js</path>
+    </interface>
+    <interface>
+      <name>ElementSelector.enable()</name>
+      <kind>Module method</kind>
+      <signature>enable(): void - Start hover detection with mousemove listener</signature>
+      <path>src/content/modules/ElementSelector.js</path>
+    </interface>
+    <interface>
+      <name>ElementSelector.disable()</name>
+      <kind>Module method</kind>
+      <signature>disable(): void - Stop hover detection, clear highlights, cancel rAF</signature>
+      <path>src/content/modules/ElementSelector.js</path>
+    </interface>
+    <interface>
+      <name>ElementSelector.highlightElement()</name>
+      <kind>Module method</kind>
+      <signature>highlightElement(element: HTMLElement): void - Apply blue outline</signature>
+      <path>src/content/modules/ElementSelector.js</path>
+    </interface>
+    <interface>
+      <name>ElementSelector.clearHighlight()</name>
+      <kind>Module method</kind>
+      <signature>clearHighlight(): void - Remove outline from previous element</signature>
+      <path>src/content/modules/ElementSelector.js</path>
+    </interface>
+  </interfaces>
+  
+  <tests>
+    <standards>
+      Testing framework: Vitest with JSDOM environment configured in vite.config.js
+      Test file naming: *.spec.js pattern
+      Test location: tests/content/modules/ for module tests
+      Mock patterns: Use vi.spyOn() for console logs, vi.fn() for callbacks
+      Setup/teardown: beforeEach/afterEach for clean test state
+      DOM mocks: Mock getBoundingClientRect(), getComputedStyle() for deterministic results
+      Coverage target: 80% code coverage for utility functions and calculation logic
+    </standards>
+    <locations>
+      tests/content/modules/ElementSelector.spec.js
+      tests/content/modules/InspectorController.spec.js
+    </locations>
+    <ideas>
+      <test criteriaId="AC1">
+        Test: ElementSelector applies 2px blue (#0080FF) outline on hover
+        Mock: Create test element, trigger mousemove, verify element.style.outline value
+      </test>
+      <test criteriaId="AC2">
+        Test: ElementSelector removes outline when mouse moves to different element
+        Mock: Hover element A, then element B, verify A's outline cleared
+      </test>
+      <test criteriaId="AC3">
+        Test: requestAnimationFrame throttling - only one frame scheduled at a time
+        Mock: Trigger multiple mousemove events rapidly, verify rafId prevents duplicate scheduling
+      </test>
+      <test criteriaId="AC4">
+        Test: isElementValid() filters hidden/zero-size elements
+        Mock: Create elements with display:none, visibility:hidden, 0x0 rect, verify all return false
+      </test>
+      <test criteriaId="ALL">
+        Test: InspectorController singleton pattern - multiple imports return same instance
+        Mock: Import controller twice, verify identity equality
+      </test>
+      <test criteriaId="ALL">
+        Test: Message listener handles TOGGLE_INSPECTOR and calls setActive()
+        Mock: Send message via chrome.runtime.sendMessage, spy on controller.setActive()
+      </test>
+      <test criteriaId="AC3">
+        Integration: Manual performance test with 100+ nested divs, DevTools profiler validates 60fps
+      </test>
+    </ideas>
+  </tests>
+</story-context>

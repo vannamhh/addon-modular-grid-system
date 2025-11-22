@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WP Rhythm Inspector - Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .section {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+    }
+    
+    .nested {
+      padding: 10px;
+      margin: 10px 0;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+    
+    .nested .nested {
+      background: #e8f4f8;
+    }
+    
+    .nested .nested .nested {
+      background: #d1e7dd;
+    }
+    
+    .hidden-display {
+      display: none;
+    }
+    
+    .hidden-visibility {
+      visibility: hidden;
+    }
+    
+    .zero-opacity {
+      opacity: 0;
+    }
+    
+    .zero-height {
+      height: 0;
+      overflow: hidden;
+    }
+    
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    .stress-test {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 2px;
+      margin-top: 20px;
+    }
+    
+    .stress-box {
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>WP 14px Rhythm Inspector - Test Page</h1>
+    
+    <div class="section">
+      <h2>Section 1: Basic Hover Test</h2>
+      <p>Hover over these elements to see the blue outline highlight:</p>
+      <div class="nested">
+        <p>Paragraph inside nested div</p>
+        <button>Click Me</button>
+        <span>Inline span element</span>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Section 2: Nested Elements (20+ layers)</h2>
+      <p>Test rapid hover over deeply nested elements:</p>
+      <div class="nested">Layer 1
+        <div class="nested">Layer 2
+          <div class="nested">Layer 3
+            <div class="nested">Layer 4
+              <div class="nested">Layer 5
+                <div class="nested">Layer 6
+                  <div class="nested">Layer 7
+                    <div class="nested">Layer 8
+                      <div class="nested">Layer 9
+                        <div class="nested">Layer 10
+                          <div class="nested">Layer 11
+                            <div class="nested">Layer 12
+                              <div class="nested">Layer 13
+                                <div class="nested">Layer 14
+                                  <div class="nested">Layer 15
+                                    <div class="nested">Layer 16
+                                      <div class="nested">Layer 17
+                                        <div class="nested">Layer 18
+                                          <div class="nested">Layer 19
+                                            <div class="nested">Layer 20
+                                              <strong>Deepest Element</strong>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Section 3: Hidden Elements Test (Should be Ignored)</h2>
+      <p>These elements should NOT show blue outline when hovering over their area:</p>
+      
+      <p class="hidden-display">This paragraph has display: none (should be ignored)</p>
+      
+      <div style="position: relative; height: 50px; background: #ffc;">
+        <p class="hidden-visibility">This paragraph has visibility: hidden (should be ignored)</p>
+        <p>Visible paragraph before invisible one</p>
+      </div>
+      
+      <p class="zero-opacity">This paragraph has opacity: 0 (should be ignored)</p>
+      
+      <div class="zero-height">This div has height: 0 (should be ignored)</div>
+      
+      <p>Normal visible paragraph after hidden elements</p>
+    </div>
+    
+    <div class="section">
+      <h2>Section 4: Interactive Elements</h2>
+      <p>Test click-through functionality (after grid is implemented):</p>
+      <button onclick="alert('Button clicked!')">Test Button</button>
+      <input type="text" placeholder="Test input field" />
+      <a href="#" onclick="alert('Link clicked!'); return false;">Test Link</a>
+    </div>
+    
+    <div class="section">
+      <h2>Section 5: Stress Test (100 elements)</h2>
+      <p>Hover rapidly across these boxes to test performance:</p>
+      <button onclick="generateStressTest()">Generate 100 Boxes</button>
+      <button onclick="clearStressTest()">Clear</button>
+      <div id="stressTest" class="stress-test"></div>
+    </div>
+    
+    <div class="section" style="box-sizing: border-box; width: 280px; height: 140px; padding: 20px; border: 5px solid red; background: #fff;">
+      <h2 style="margin: 0 0 10px 0; font-size: 16px;">Section 6: Grid Test (280×140 border-box)</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 14px;">Click this section to lock grid. Box is 280×140 (border-box), with 20px padding + 5px border. Content area: 230×90. Grid should align with top-left corner.</p>
+    </div>
+    
+    <div class="section" style="box-sizing: border-box; width: 300px; height: 200px; position: static; background: #ffeb3b; padding: 15px; border: 3px solid #f57f17;">
+      <h2 style="margin: 0 0 10px 0;">Section 7: Static Positioning Test</h2>
+      <p style="margin: 0;">This element has position:static (border-box 300×200). Click to verify grid forces position:relative temporarily and aligns correctly.</p>
+    </div>
+    
+    <div class="section">
+      <h2>Section 8: Single Instance Test</h2>
+      <div style="display: flex; gap: 20px;">
+        <div style="width: 200px; height: 100px; background: #e3f2fd; padding: 10px; border: 2px solid #2196f3;">
+          <strong>Element A</strong>
+          <p style="font-size: 12px; margin: 5px 0 0 0;">Click me first</p>
+        </div>
+        <div style="width: 200px; height: 100px; background: #fce4ec; padding: 10px; border: 2px solid #e91e63;">
+          <strong>Element B</strong>
+          <p style="font-size: 12px; margin: 5px 0 0 0;">Then click me</p>
+        </div>
+      </div>
+      <p style="margin-top: 10px; font-size: 14px;"><strong>Expected:</strong> Grid A disappears when you click Element B (single instance rule)</p>
+    </div>
+    
+    <div class="section">
+      <h2>Section 9: Pointer-Events Passthrough</h2>
+      <div style="position: relative; width: 300px; height: 150px; background: #f5f5f5; padding: 20px;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then test:</p>
+        <button onclick="alert('✅ Click passthrough works!')" style="display: block; margin: 5px 0;">Click This Button</button>
+        <input type="text" placeholder="Type here" style="display: block; margin: 5px 0; width: 200px;" />
+        <a href="#" onclick="alert('✅ Link works!'); return false;" style="display: block; margin: 5px 0;">Click This Link</a>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Instructions</h2>
+      <h3>Story 1.2 Tests (Hover/Highlight):</h3>
+      <ol>
+        <li>Load this extension in Chrome Developer Mode</li>
+        <li>Click the extension icon to activate</li>
+        <li>Verify "WP Inspector Ready" appears in console (press F12)</li>
+        <li>Hover over elements - you should see a 2px blue (#0080FF) outline</li>
+        <li>Test Section 2 by rapidly moving mouse over nested divs</li>
+        <li>Open DevTools Performance tab (Cmd+Shift+E or Ctrl+Shift+E)</li>
+        <li>Start recording, hover rapidly for 10 seconds, stop recording</li>
+        <li>Verify frame rate stays above 55fps (target: 60fps)</li>
+        <li>Test Section 3 - hover over hidden element areas (no outline should appear)</li>
+        <li>Test Section 5 - generate 100 boxes and hover rapidly across them</li>
+      </ol>
+      
+      <h3>Story 1.3 Tests (Grid Lock):</h3>
+      <ol start="11">
+        <li><strong>Basic Grid Lock:</strong> Hover over Section 6, then click it. Grid overlay should appear with cyan lines (#00FFFF).</li>
+        <li><strong>Grid Pattern:</strong> Inspect shadow root in DevTools. Verify 14px squares using repeating-linear-gradient.</li>
+        <li><strong>Padding Box Alignment:</strong> Use DevTools Ruler tool. Grid should start 5px inside red border (at padding box edge), not at border edge.</li>
+        <li><strong>Grid Dimensions:</strong> Section 6 has 280×140px border-box (content: 230×90). Grid should align perfectly with top-left corner of the element.</li>
+        <li><strong>Static Position Adjustment:</strong> Click Section 7. Inspect element - should temporarily have position:relative while grid active.</li>
+        <li><strong>Single Instance:</strong> Click Element A in Section 8, verify grid appears. Then click Element B. Grid A should disappear, only Grid B visible.</li>
+        <li><strong>Shadow DOM Structure:</strong> Inspect any locked element. Should see <code>&lt;div id="wp-rhythm-host"&gt;</code> with #shadow-root(open) containing &lt;style&gt; and &lt;div class="grid-pattern"&gt;.</li>
+        <li><strong>Pointer-Events Passthrough:</strong> Lock grid to Section 9 container. Click button, type in input, click link. All should work normally despite grid overlay.</li>
+        <li><strong>Grid Opacity:</strong> Verify grid is semi-transparent (35% opacity) so you can see content beneath.</li>
+        <li><strong>CSS Isolation:</strong> Open browser console, run: <code>document.querySelector('.grid-pattern')</code>. Should return null (element inside shadow root).</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script>
+    function generateStressTest() {
+      const container = document.getElementById('stressTest');
+      container.innerHTML = '';
+      
+      for (let i = 1; i <= 100; i++) {
+        const box = document.createElement('div');
+        box.className = 'stress-box';
+        box.textContent = i;
+        container.appendChild(box);
+      }
+    }
+    
+    function clearStressTest() {
+      document.getElementById('stressTest').innerHTML = '';
+    }
+    
+    // Log page load
+    console.log('Test page loaded. Activate the extension to begin testing.');
+  </script>
+</body>
+</html>

@@ -25,12 +25,20 @@ toggleBtn.addEventListener('click', async () => {
   } catch (error) {
     console.log('Content script not ready yet:', error);
   }
+  
+  // Persist state to storage
+  await chrome.storage.local.set({ isActive });
 });
 
 // Initialize popup state
-chrome.storage.local.get(['isActive'], (result) => {
-  isActive = result.isActive || false;
-  toggleBtn.textContent = isActive ? 'Deactivate Inspector' : 'Activate Inspector';
-  statusText.textContent = isActive ? 'Active' : 'Inactive';
-  statusText.className = isActive ? 'active' : '';
-});
+(async () => {
+  try {
+    const result = await chrome.storage.local.get(['isActive']);
+    isActive = result.isActive || false;
+    toggleBtn.textContent = isActive ? 'Deactivate Inspector' : 'Activate Inspector';
+    statusText.textContent = isActive ? 'Active' : 'Inactive';
+    statusText.className = isActive ? 'active' : '';
+  } catch (error) {
+    console.error('Failed to load state:', error);
+  }
+})();

@@ -38,8 +38,8 @@ story_location: "{project-root}/docs/sprint-artifacts"
 development_status:
   epic-1: contexted
   1-1-project-scaffolding-manifest-v3-setup: done
-  1-2-element-discovery-highlighting: drafted
-  1-3-grid-overlay-injection-the-lock: backlog
+  1-2-element-discovery-highlighting: done
+  1-3-grid-overlay-injection-the-lock: in-progress
   1-4-click-through-transparency: backlog
   epic-1-retrospective: optional
   
