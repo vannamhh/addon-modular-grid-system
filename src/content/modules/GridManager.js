@@ -138,10 +138,20 @@ class GridManager {
     host.style.pointerEvents = 'none';
     host.style.zIndex = Z_INDEX.toString();
     
-    // Grid covers entire element including border (border-box)
-    // Position shadow host to fill entire element using inset
-    // This ensures consistent behavior across all websites
-    host.style.inset = '0';
+    // Grid must cover entire element INCLUDING border (from border edge)
+    // CSS positioning anchor point: inset: 0 anchors to Padding Edge, not Border Edge
+    // Solution: Use negative inset to shift outward to border edge
+    const computedStyle = window.getComputedStyle(this.targetElement);
+    const borderTop = parseFloat(computedStyle.borderTopWidth) || 0;
+    const borderLeft = parseFloat(computedStyle.borderLeftWidth) || 0;
+    const borderRight = parseFloat(computedStyle.borderRightWidth) || 0;
+    const borderBottom = parseFloat(computedStyle.borderBottomWidth) || 0;
+    
+    // Apply negative offset to extend from padding edge to border edge
+    host.style.top = `-${borderTop}px`;
+    host.style.left = `-${borderLeft}px`;
+    host.style.right = `-${borderRight}px`;
+    host.style.bottom = `-${borderBottom}px`;
     
     return host;
   }

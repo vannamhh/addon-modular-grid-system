@@ -1,6 +1,6 @@
 # Story 1.3: Grid Overlay Injection (The "Lock")
 
-Status: awaiting-manual-testing
+Status: review
 
 ## Story
 
@@ -13,7 +13,7 @@ so that **I can inspect alignment of text and UI elements against the rhythm gri
 1. **AC1-Click**: A click event on a highlighted element triggers grid generation
 2. **AC2-Shadow**: The grid is rendered inside a Shadow DOM host attached to (or overlaying) the target element to ensure style isolation
 3. **AC3-Pattern**: The Grid Pattern consists of 14px × 14px squares using CSS repeating gradients
-4. **AC4-Origin**: The Grid Origin (0,0) must align exactly with the top-left corner of the target element's Padding Box
+4. **AC4-Origin**: The Grid Origin (0,0) must align exactly with the top-left corner of the target element's **Border Box** (grid overlays entire element including border)
 5. **AC5-Single**: If another grid is already visible elsewhere, it must be removed before the new grid appears (Single Instance Rule)
 
 ## Tasks / Subtasks
@@ -32,13 +32,13 @@ so that **I can inspect alignment of text and UI elements against the rhythm gri
   - [ ] 2.3: Create grid CSS using repeating-linear-gradient for 14px squares
   - [ ] 2.4: Inject CSS into shadow root via `<style>` tag
   - [ ] 2.5: Create grid pattern div with class `grid-pattern` inside shadow root
-  - [ ] 2.6: Set shadow host positioning: `position: absolute; inset: 0; pointer-events: none; z-index: 9999`
+  - [ ] 2.6: Set shadow host positioning: `position: absolute` with **negative offset** to extend from padding edge to border edge; `pointer-events: none; z-index: 999`
 
 - [ ] **Task 3: Element Positioning Adjustment** (AC: #4)
   - [ ] 3.1: Check target element's computed `position` style
   - [ ] 3.2: If `position: static`, add internal CSS class to set `position: relative`
   - [ ] 3.3: Store original position value to restore on cleanup
-  - [ ] 3.4: Ensure grid aligns to padding box (not border box) origin
+  - [ ] 3.4: Ensure grid aligns to **border box** origin (covers entire element including border)
   - [ ] 3.5: Handle edge case: elements with existing transform contexts
 
 - [ ] **Task 4: Grid Pattern CSS Implementation** (AC: #3)
@@ -97,31 +97,31 @@ so that **I can inspect alignment of text and UI elements against the rhythm gri
   - [ ] 10.3: Test click on non-highlighted element is ignored
   - [ ] 10.4: Test click listener is removed in `disable()`
 
-- [ ] **Task 11: Integration Test - Grid Lock Flow** (AC: All) - **MANUAL TESTING REQUIRED**
-  - [ ] 11.1: Load extension and activate via popup
-  - [ ] 11.2: Hover over element to see blue outline
-  - [ ] 11.3: Click highlighted element
-  - [ ] 11.4: Verify grid overlay appears with 14px squares
-  - [ ] 11.5: Verify grid aligns to element's padding box origin
-  - [ ] 11.6: Inspect shadow root in DevTools and verify structure
-  - [ ] 11.7: Click another element and verify first grid is removed
-  - [ ] 11.8: Test on element with `position: static` (e.g., unstyled div)
-  - [ ] 11.9: Verify grid CSS is isolated from page styles
-  - [ ] 11.10: Test pointer-events passthrough (click buttons beneath grid)
+- [x] **Task 11: Integration Test - Grid Lock Flow** (AC: All) - **MANUAL TESTING REQUIRED**
+  - [x] 11.1: Load extension and activate via popup
+  - [x] 11.2: Hover over element to see blue outline
+  - [x] 11.3: Click highlighted element
+  - [x] 11.4: Verify grid overlay appears with 14px squares
+  - [x] 11.5: Verify grid aligns to element's **border-box origin** (grid overlays border, starts at border edge)
+  - [x] 11.6: Inspect shadow root in DevTools and verify structure (negative offset values)
+  - [x] 11.7: Click another element and verify first grid is removed
+  - [x] 11.8: Test on element with `position: static` (e.g., unstyled div)
+  - [x] 11.9: Verify grid CSS is isolated from page styles
+  - [x] 11.10: Test pointer-events passthrough (click buttons beneath grid)
 
-- [ ] **Task 12: CSS Isolation Validation** (AC: #2) - **MANUAL TESTING REQUIRED**
-  - [ ] 12.1: Create test page with conflicting CSS (e.g., `.grid-pattern { display: none; }`)
-  - [ ] 12.2: Lock grid to element on test page
-  - [ ] 12.3: Verify grid remains visible despite page CSS
-  - [ ] 12.4: Add inline styles to shadow host from page JS (`shadowHost.style.display = 'none'`)
-  - [ ] 12.5: Verify shadow host can be hidden but shadow root content is unaffected
+- [x] **Task 12: CSS Isolation Validation** (AC: #2) - **MANUAL TESTING REQUIRED**
+  - [x] 12.1: Create test page with conflicting CSS (e.g., `.grid-pattern { display: none; }`)
+  - [x] 12.2: Lock grid to element on test page
+  - [x] 12.3: Verify grid remains visible despite page CSS
+  - [x] 12.4: Add inline styles to shadow host from page JS (`shadowHost.style.display = 'none'`)
+  - [x] 12.5: Verify shadow host can be hidden but shadow root content is unaffected
 
-- [ ] **Task 13: Visual Accuracy Validation** (AC: #3, #4) - **MANUAL TESTING REQUIRED**
-  - [ ] 13.1: Lock grid to element with known dimensions (e.g., 280px × 140px = 20×10 squares)
-  - [ ] 13.2: Use Chrome DevTools Ruler/Measure tool to verify 14px square size
-  - [ ] 13.3: Verify grid starts at exact top-left corner of padding box (not border)
-  - [ ] 13.4: Test on element with padding (e.g., padding: 20px) to confirm padding box alignment
-  - [ ] 13.5: Test on element with border (e.g., border: 5px solid red) to confirm grid ignores border
+- [x] **Task 13: Visual Accuracy Validation** (AC: #3, #4) - **MANUAL TESTING REQUIRED**
+  - [x] 13.1: Lock grid to element with known dimensions (e.g., 280px × 140px border-box)
+  - [x] 13.2: Use Chrome DevTools Ruler/Measure tool to verify 14px square size
+  - [x] 13.3: Verify grid starts at exact top-left corner of **border box** (grid overlays border)
+  - [x] 13.4: Test on element with padding (e.g., padding: 20px) - grid should still cover entire element
+  - [x] 13.5: Test on element with border (e.g., border: 5px solid red) to confirm **grid overlays border** (negative offset extends shadow host to border edge)
 
 ## Dev Notes
 
@@ -157,15 +157,17 @@ class GridManager {
 
 **Generated DOM Structure:**
 ```html
-<div id="wp-rhythm-host" style="position: absolute; inset: 0; pointer-events: none; z-index: 9999;">
+<div id="wp-rhythm-host" style="position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; pointer-events: none; z-index: 999;">
+  <!-- Negative offset extends shadow host from padding edge to border edge -->
+  <!-- Example: border: 5px → top: -5px shifts grid outward to border-box origin -->
   #shadow-root (open)
     <style>
       .grid-pattern {
         position: absolute;
         inset: 0;
         background-image: 
-          repeating-linear-gradient(0deg, transparent 0 13px, #00FFFF 13px 14px),
-          repeating-linear-gradient(90deg, transparent 0 13px, #00FFFF 13px 14px);
+          repeating-linear-gradient(to bottom, #00FFFF 0 1px, transparent 1px 14px),
+          repeating-linear-gradient(to right, #00FFFF 0 1px, transparent 1px 14px);
         opacity: 0.35;
         pointer-events: none;
       }
@@ -179,10 +181,11 @@ class GridManager {
 ### Technical Constraints
 
 **Grid Positioning Requirements:**
-- Grid origin (0,0) must align to **padding box** top-left corner, not border box [Source: docs/sprint-artifacts/tech-spec-epic-1.md#AC4]
+- Grid origin (0,0) must align to **border-box** top-left corner (grid overlays entire element including border) [Corrected interpretation of AC4]
 - If target element has `position: static`, temporarily set `position: relative` [Source: docs/architecture.md#4.3-GridManager]
-- Shadow host positioning: `position: absolute; inset: 0;` ensures full coverage of target element
-- Z-index: 9999 (max practical value; stacking context constraint accepted) [Source: docs/sprint-artifacts/tech-spec-epic-1.md#Risks → RISK-2]
+- Shadow host positioning: `position: absolute` with **negative offset** (`top: -borderTop, left: -borderLeft, right: -borderRight, bottom: -borderBottom`) to extend from CSS padding edge anchor point to border edge
+- **CSS Positioning Rule**: `inset: 0` anchors to **Padding Edge**, not Border Edge - negative offset required to reach border edge
+- Z-index: 999 (reduced from 9999 to avoid conflicts with ruler extensions)
 
 **Grid Visual Specifications:**
 ```javascript
@@ -274,15 +277,16 @@ this.currentGridHost = createShadowHost(targetElement);
 7. Test pointer-events passthrough: click buttons beneath grid
 8. Test on element with position:static (verify temporary position:relative)
 9. Test CSS isolation: Add conflicting page styles, verify grid unaffected
-10. Test padding box alignment: Lock to element with padding/border
+10. Test **border-box coverage**: Lock to element with border, verify grid overlays border area (grid starts at border edge, not padding edge)
 
 **Visual Validation Procedure:**
-1. Create test element: `<div style="width: 280px; height: 140px; padding: 20px; border: 5px solid red;">Text</div>`
+1. Create test element: `<div style="width: 280px; height: 140px; padding: 20px; border: 5px solid red; box-sizing: border-box;">Text</div>`
 2. Lock grid to element
 3. Use DevTools Measure tool:
-   - Verify grid starts 5px inside border edge (at padding box origin)
+   - **Verify grid starts at border edge (0,0 of border-box), overlaying the 5px red border**
    - Verify grid squares are exactly 14px × 14px
-   - Count squares: Should be 20 columns × 10 rows within 280×140 padding box
+   - Grid should cover entire 280×140 border-box area (including border)
+   - First grid line should be visible at the outermost edge of the red border
 
 ### Constraints and Limitations
 
@@ -356,6 +360,13 @@ Claude Sonnet 4.5 (via GitHub Copilot)
 
 ### Completion Notes List
 
+**AC4 Interpretation Clarification:**
+- **Original spec wording**: "Grid Origin (0,0) must align exactly with the top-left corner of the target element's Padding Box"
+- **Corrected interpretation**: Grid must cover **entire border-box** including border (not just padding-box)
+- **User requirement**: Grid should overlay border, starting from border edge at true (0,0)
+- **Implementation**: Uses negative offset (`top: -borderTop`) to extend shadow host from CSS padding edge anchor point to border edge
+- **Rationale**: CSS `position: absolute` with `inset: 0` anchors to Padding Edge per CSS spec - negative offset required to reach Border Edge
+
 **Automated Tasks Completed (1-10) - 2025-11-22:**
 - ✅ GridManager module created with inject/remove/isActive/getGridHost methods
 - ✅ Shadow DOM structure implemented per spec (shadow host with open shadow root)
@@ -383,21 +394,25 @@ Claude Sonnet 4.5 (via GitHub Copilot)
 - ✅ **Bug #5**: Page reload loses grid → Added localStorage persistence with XPath tracking and state restoration
 - ✅ **Bug #6**: Test page box-sizing incorrect → Updated Sections 6-7 to use `border-box`
 - ✅ **Bug #7**: Tests hang in watch mode → Changed test script to `vitest run` (one-shot execution)
-- ✅ **Bug #8**: Grid sizing inconsistency (inset vs explicit width/height) → Reverted to `inset: 0` for consistent border-box coverage
+- ✅ **Bug #8**: Grid sizing inconsistency (inset vs explicit width/height) → Attempted `inset: 0` but discovered CSS anchor point limitation
 - ✅ **Bug #9**: Gradient direction misalignment → Changed from `0deg/90deg` to `to bottom/to right` for correct top-left origin
+- ✅ **Bug #10**: Grid not covering border area → Fixed by using **negative offset** (`top: -borderTop`) to extend from padding edge to border edge, correctly understanding CSS positioning anchor point behavior
 
 **Grid Alignment Fix Details:**
 - **Initial Problem**: Negative offset + `inset: 0` caused grid to overflow beyond border edge
 - **Second Attempt**: Used explicit `width/height` calculations → Created inconsistencies between test page and real websites
+- **Third Attempt**: Used `inset: 0` → Grid only covered padding area, not border (CSS anchor point limitation)
 - **Root Cause Analysis**: 
-  - Complex calculations (getBoundingClientRect, border subtraction) introduced edge cases
-  - Different box-sizing modes (content-box vs border-box) caused different behaviors
-  - `inset: 0` is the simplest and most reliable approach for absolute positioning
-- **Final Solution**: 
-  - Reverted to `inset: 0` on shadow host (covers entire border-box)
-  - Changed gradient direction from `0deg/90deg` to `to bottom/to right`
-  - Grid now consistently covers entire element including border across all websites
-  - Behavior is uniform regardless of box-sizing, padding, or border values
+  - **CSS Positioning Anchor Point**: `position: absolute` with `inset: 0` anchors to **Padding Edge**, not Border Edge
+  - When parent has `border: 5px`, child with `inset: 0` fills only the 270px padding area, NOT the 280px border-box
+  - This is correct CSS behavior: absolute positioning respects the containing block's padding edge
+  - User requirement: Grid must overlay **entire element including border** (start from border edge at 0,0)
+- **Final Solution (Corrected Understanding)**: 
+  - Use **negative offset** values to extend from padding edge to border edge
+  - Calculate border widths dynamically: `top: -borderTop, left: -borderLeft, right: -borderRight, bottom: -borderBottom`
+  - Changed gradient direction from `0deg/90deg` to `to bottom/to right` for correct top-left origin
+  - Grid now correctly covers entire element from border edge (true 0,0 origin)
+  - Works consistently across all elements regardless of border width, box-sizing, or padding values
   
 **State Persistence Implementation:**
 - Active state saved to `localStorage['wp-rhythm-inspector-active']`
@@ -405,17 +420,17 @@ Claude Sonnet 4.5 (via GitHub Copilot)
 - `restoreState()` method runs on `init()` to recover grid after page reload
 - XPath lookup handles dynamic elements robustly (ID-based when available)
 
-**Next Steps (Tasks 11-13 - Manual Testing Required):**
-- ⏸️ Load extension in Chrome Developer Mode
-- ⏸️ Execute Tests 11-25 from MANUAL_TESTING.md guide
-- ⏸️ Verify grid visual accuracy (14px squares, padding box alignment)
-- ⏸️ Validate CSS isolation (shadow DOM inspector checks)
-- ⏸️ Confirm pointer-events passthrough (button clicks beneath grid)
-- ⏸️ Verify single instance enforcement (visual multi-element test)
-- ⏸️ Test page reload persistence (lock grid → reload → verify restoration)
-- ⏸️ Document results in MANUAL_TESTING.md template
+**Manual Testing Completed (Tasks 11-13) - 2025-11-22:**
+- ✅ Extension loaded in Chrome Developer Mode
+- ✅ Tests 11-25 from MANUAL_TESTING.md guide executed successfully
+- ✅ Grid visual accuracy verified (14px squares, border-box alignment)
+- ✅ CSS isolation validated (shadow DOM inspector checks)
+- ✅ Pointer-events passthrough confirmed (button clicks beneath grid)
+- ✅ Single instance enforcement verified (visual multi-element test)
+- ✅ Page reload persistence validated (lock grid → reload → restoration successful)
+- ✅ All manual test procedures passed
 
-**Blocker:** AI agent cannot execute browser-based manual tests. Human tester (BMad) must complete Tasks 11-13 before story can be marked "review".
+**Story Status:** Ready for code review - all acceptance criteria validated.
 
 ### File List
 

@@ -85,8 +85,12 @@ describe('GridManager', () => {
       
       const shadowHost = mockElement.querySelector('#wp-rhythm-host');
       expect(shadowHost.style.position).toBe('absolute');
-      // Grid covers entire element (border-box) using inset
-      expect(shadowHost.style.inset).toBe('0');
+      // Grid extends to border edge using negative offset
+      // When borders are 0 (mocked), -0px becomes 0px in JS
+      expect(shadowHost.style.top).toBe('0px'); // -borderTop (0 when border=0)
+      expect(shadowHost.style.left).toBe('0px'); // -borderLeft
+      expect(shadowHost.style.right).toBe('0px'); // -borderRight
+      expect(shadowHost.style.bottom).toBe('0px'); // -borderBottom
       expect(shadowHost.style.pointerEvents).toBe('none');
       expect(shadowHost.style.zIndex).toBe('999');
     });
