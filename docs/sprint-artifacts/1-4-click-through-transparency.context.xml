@@ -1,0 +1,287 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>4</storyId>
+    <title>Click-Through Transparency</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-22</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-4-click-through-transparency.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>User</asA>
+    <iWant>interact with page elements (click buttons, select text, open context menus) while the grid is visible</iWant>
+    <soThat>I can validate alignment without removing the grid overlay</soThat>
+    <tasks>
+      - Task 1: Verify GridManager Pointer-Events Implementation (AC1)
+      - Task 2: Test Button Click Passthrough (AC2)
+      - Task 3: Test Link Click Passthrough (AC2)
+      - Task 4: Test Form Input Passthrough (AC2)
+      - Task 5: Test Text Selection Passthrough (AC3)
+      - Task 6: Test Context Menu Passthrough (AC4)
+      - Task 7: Test DevTools Inspect Element (AC4)
+      - Task 8: Test Drag-and-Drop Passthrough (AC2)
+      - Task 9: Test Custom Event Handlers (AC2)
+      - Task 10: Performance Validation - Event Propagation Latency (AC5)
+      - Task 11: Edge Case - Z-Index Stacking Conflicts (AC1, AC2)
+      - Task 12: Edge Case - Nested Shadow DOM (AC1, AC2)
+      - Task 13: Edge Case - CSS Pointer-Events Override (AC1)
+      - Task 14: Cross-Browser Compatibility Check (All ACs)
+      - Task 15: Accessibility Validation (AC2)
+      - Task 16: Write Unit Tests for Pointer-Events Configuration (AC1)
+      - Task 17: Update Manual Testing Guide (All ACs)
+      - Task 18: Update Test Page HTML (All ACs)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1" priority="high">
+      <title>Pointer-Events CSS Property</title>
+      <description>Shadow host div has CSS property `pointer-events: none` to enable passthrough</description>
+      <validation>Inspect shadow host inline styles and verify pointer-events: none is set</validation>
+    </criterion>
+    <criterion id="AC2" priority="high">
+      <title>Click Passthrough</title>
+      <description>Users can click buttons, links, and form inputs beneath the grid without interference</description>
+      <validation>Lock grid to container with interactive elements, click buttons/links/inputs and verify handlers fire</validation>
+    </criterion>
+    <criterion id="AC3" priority="high">
+      <title>Text Selection</title>
+      <description>Text selection works normally beneath the grid overlay</description>
+      <validation>Click-drag to select text, double-click word selection, triple-click paragraph selection all work</validation>
+    </criterion>
+    <criterion id="AC4" priority="high">
+      <title>Context Menu</title>
+      <description>Right-clicking beneath the grid opens context menu on the underlying page element (not the grid)</description>
+      <validation>Right-click elements beneath grid, verify correct context menu appears (Copy, Inspect Element, etc.)</validation>
+    </criterion>
+    <criterion id="AC5" priority="medium">
+      <title>Performance - No Latency</title>
+      <description>Click-through does not degrade interaction responsiveness (target: less than 16ms event propagation delay)</description>
+      <validation>Measure click latency with/without grid using performance.now(), verify delta less than 16ms (ideally less than 1ms)</validation>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>Key Technical Decisions #3</section>
+        <snippet>Event Passthrough: The Grid container uses pointer-events: none to allow click-through interaction. This ensures the grid is visually present but functionally transparent to all pointer events.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic 1 Technical Specification</title>
+        <section>Workflow 4: Pointer Events Passthrough</section>
+        <snippet>Grid overlay rendered with pointer-events: none on shadow host. Browser ignores shadow host div, passes events directly to underlying elements. Button click handlers execute normally. Right-click context menu (Inspect Element) works on actual page elements.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic 1 Technical Specification</title>
+        <section>Acceptance Criteria AC6</section>
+        <snippet>Shadow host div has CSS property pointer-events: none. Users can click buttons, links, and form inputs beneath the grid. Text selection works normally. Right-clicking opens context menu on underlying page element (not the grid).</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic 1 Technical Specification</title>
+        <section>NFR Performance - AC5</section>
+        <snippet>Click events must have less than 16ms propagation delay (60fps budget). Event.target must reference actual page element, not shadow host. DevTools "Inspect Element" must highlight page element, not shadow components.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/1-3-grid-overlay-injection-the-lock.md</path>
+        <title>Story 1.3 Completion Notes</title>
+        <section>Dev Agent Record - Completion Notes</section>
+        <snippet>GridManager Implementation Already Includes Pointer-Events: Shadow host created with pointer-events: none in inline styles. Grid pattern CSS includes pointer-events: none for redundancy. No JavaScript event listeners attached to grid components. THIS STORY validates that implementation works correctly across all interaction types.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/1-3-grid-overlay-injection-the-lock.md</path>
+        <title>Story 1.3 Shadow DOM Structure</title>
+        <section>Dev Notes - Learnings from Previous Story</section>
+        <snippet>Shadow host: position: absolute with negative offset; pointer-events: none; z-index: 999. Grid pattern div also has pointer-events: none (redundant but explicit). Click-through must work even when grid overlays element border.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd/6. Epic Details.md</path>
+        <title>PRD Epic 1 Story 1.4</title>
+        <section>Story 1.4: Click-Through Transparency</section>
+        <snippet>As a Developer, I want to click and interact with elements beneath the grid layer so that my workflow is not interrupted. The container holding the grid must have pointer-events: none. Users can click buttons, links, form inputs, select text, and right-click beneath the grid.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd/2. Requirements.md</path>
+        <title>PRD Functional Requirements</title>
+        <section>FR3 - Transparent Interaction</section>
+        <snippet>Grid overlay must have CSS pointer-events: none. All click, text selection, and drag-drop interactions must pass through the grid to underlying web elements without interference.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/content/modules/GridManager.js</path>
+        <kind>module</kind>
+        <symbol>GridManager</symbol>
+        <lines>1-210</lines>
+        <reason>Contains pointer-events: none implementation in shadow host inline styles (line 91) and grid pattern CSS (line 189). This is the primary implementation that Story 1.4 validates.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/GridManager.js</path>
+        <kind>method</kind>
+        <symbol>createShadowHost</symbol>
+        <lines>125-152</lines>
+        <reason>Creates shadow host with pointer-events: none inline style. This ensures click-through at the shadow host level.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/GridManager.js</path>
+        <kind>method</kind>
+        <symbol>generateGridCSS</symbol>
+        <lines>173-190</lines>
+        <reason>Generates grid pattern CSS including pointer-events: none on .grid-pattern class for redundant passthrough enforcement.</reason>
+      </artifact>
+      <artifact>
+        <path>tests/content/modules/GridManager.spec.js</path>
+        <kind>test</kind>
+        <symbol>GridManager Unit Tests</symbol>
+        <lines>1-290</lines>
+        <reason>Existing unit tests for GridManager. Task 16 will add pointer-events validation tests here.</reason>
+      </artifact>
+      <artifact>
+        <path>test-page.html</path>
+        <kind>test-page</kind>
+        <symbol>Section 9: Pointer-Events Passthrough</symbol>
+        <lines>204-210</lines>
+        <reason>Existing manual test section with button, input, and link for testing click-through. Task 18 will expand this to Section 10 with more comprehensive test cases.</reason>
+      </artifact>
+      <artifact>
+        <path>MANUAL_TESTING.md</path>
+        <kind>documentation</kind>
+        <symbol>TEST 18: Pointer-Events Passthrough</symbol>
+        <lines>136-154</lines>
+        <reason>Existing manual test procedure for pointer-events. Task 17 will add Story 1.4 section with 15 additional test procedures covering all interaction types.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/ElementSelector.js</path>
+        <kind>module</kind>
+        <symbol>ElementSelector</symbol>
+        <lines>1-180</lines>
+        <reason>Handles hover and click events for element selection. Understanding event flow is important for validating that grid doesn't interfere with page events.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/InspectorController.js</path>
+        <kind>module</kind>
+        <symbol>InspectorController</symbol>
+        <lines>1-120</lines>
+        <reason>Orchestrates GridManager and ElementSelector. Controls when grid is active and ensures proper state transitions.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="vite" version="^5.4.21" />
+        <package name="@crxjs/vite-plugin" version="^2.2.1" />
+        <package name="vitest" version="^1.6.1" />
+        <package name="jsdom" version="^23.2.0" />
+      </node>
+      <browser>
+        <api name="Shadow DOM (attachShadow)" spec="Web Components V1" version="Chrome 53+" />
+        <api name="pointer-events CSS property" spec="CSS Basic User Interface Module Level 3" version="Chrome 1+" />
+        <api name="getBoundingClientRect" spec="CSSOM View Module" version="Standard" />
+        <api name="getComputedStyle" spec="CSSOM" version="Standard" />
+        <api name="Chrome Extensions Manifest V3" spec="Chrome 88+" version="Required" />
+      </browser>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="technical" priority="high">
+      <title>Pointer-Events Inheritance</title>
+      <description>pointer-events: none on parent element disables pointer events for entire subtree (children inherit). Grid overlay becomes "transparent" to mouse/touch events. Browser event targeting skips grid elements entirely, as if they don't exist.</description>
+      <source>MDN: pointer-events, tech-spec-epic-1.md#NFR-Performance</source>
+    </constraint>
+    <constraint type="technical" priority="high">
+      <title>Event Propagation Requirements</title>
+      <description>Click events: less than 16ms propagation delay (60fps budget). Event.target must reference actual page element, not shadow host. Context menu (right-click) must show page element menu, not grid. DevTools "Inspect Element" must highlight page element, not shadow components.</description>
+      <source>tech-spec-epic-1.md#AC5, tech-spec-epic-1.md#Workflows</source>
+    </constraint>
+    <constraint type="technical" priority="high">
+      <title>Zero JavaScript Overhead</title>
+      <description>No JavaScript event listeners should be attached to shadow host or grid pattern div. Performance: Zero overhead for pointer-events passthrough (pure CSS, no JS execution). This is pure CSS passthrough with no JavaScript event handling.</description>
+      <source>architecture.md#Architectural-Goals → Non-intrusive</source>
+    </constraint>
+    <constraint type="technical" priority="medium">
+      <title>Browser Compatibility</title>
+      <description>Chrome 88+ (Manifest V3 minimum). Chromium-based browsers (Edge, Brave, Opera) expected to behave identically. Firefox/Safari out of scope for MVP. Desktop Chrome only, mobile browsers not supported.</description>
+      <source>tech-spec-epic-1.md#Dependencies → Version Constraints, tech-spec-epic-1.md#ASSUMPTION-1</source>
+    </constraint>
+    <constraint type="scope" priority="medium">
+      <title>Out of Scope</title>
+      <description>Touch event handling for mobile browsers (mobile out of scope per PRD). Custom cursor styling (grid doesn't affect cursor appearance). Hover state performance optimization (covered by Story 1.2's rAF throttling). Multi-touch gestures (pinch-zoom, two-finger scroll).</description>
+      <source>Story 1.4 Dev Notes - Constraints and Limitations</source>
+    </constraint>
+    <constraint type="architectural" priority="high">
+      <title>Shadow DOM Structure</title>
+      <description>Shadow host div with id="wp-rhythm-host". Open shadow root (mode: 'open') for debuggability. Grid pattern div inside shadow root with class="grid-pattern". Both shadow host and grid pattern have pointer-events: none.</description>
+      <source>1-3-grid-overlay-injection-the-lock.md#Dev-Notes → Shadow DOM Structure</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GridManager.inject()</name>
+      <kind>method</kind>
+      <signature>inject(targetElement: HTMLElement): void</signature>
+      <path>src/content/modules/GridManager.js:33-60</path>
+      <description>Creates shadow host with pointer-events: none inline style and injects grid pattern. This method already implements the passthrough mechanism that Story 1.4 validates.</description>
+    </interface>
+    <interface>
+      <name>GridManager.createShadowHost()</name>
+      <kind>method</kind>
+      <signature>createShadowHost(): HTMLElement</signature>
+      <path>src/content/modules/GridManager.js:125-152</path>
+      <description>Creates shadow host div with positioning and pointer-events: none style. Key line: host.style.pointerEvents = 'none';</description>
+    </interface>
+    <interface>
+      <name>GridManager.generateGridCSS()</name>
+      <kind>method</kind>
+      <signature>generateGridCSS(): string</signature>
+      <path>src/content/modules/GridManager.js:173-190</path>
+      <description>Generates CSS string for grid pattern including pointer-events: none on .grid-pattern class. Returns CSS text for shadow root style tag.</description>
+    </interface>
+    <interface>
+      <name>pointer-events CSS property</name>
+      <kind>CSS property</kind>
+      <signature>pointer-events: none</signature>
+      <path>N/A - CSS Standard</path>
+      <description>CSS property that makes element transparent to pointer events. When set to 'none', element and its children do not become target for pointer events. Browser passes events through to elements beneath.</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      This story is primarily validation and testing of existing GridManager implementation from Story 1.3. Testing standards: Unit tests with Vitest + JSDOM to verify pointer-events CSS is correctly applied. Manual integration tests to validate actual click-through, text selection, context menu, and DevTools interactions work correctly. Performance testing to validate less than 16ms event propagation delay (ideally less than 1ms for pure CSS passthrough). Cross-browser testing in Chrome, Edge, Brave (Chromium-based). Accessibility testing for keyboard navigation and screen reader compatibility.
+    </standards>
+    <locations>
+      - tests/content/modules/GridManager.spec.js (unit tests for pointer-events validation)
+      - test-page.html Section 10 (manual test page with interactive elements)
+      - MANUAL_TESTING.md Story 1.4 section (manual test procedures)
+    </locations>
+    <ideas>
+      <idea ac="AC1">Unit test: Verify shadow host inline styles include pointer-events: none</idea>
+      <idea ac="AC1">Unit test: Verify grid pattern CSS includes pointer-events: none on .grid-pattern class</idea>
+      <idea ac="AC1">Unit test: Mock getComputedStyle and assert resolved pointer-events value is 'none'</idea>
+      <idea ac="AC2">Manual test: Lock grid to container with buttons, click buttons and verify click handlers fire (console logs or alerts)</idea>
+      <idea ac="AC2">Manual test: Lock grid to container with links, click links and verify navigation works (Ctrl+Click opens new tab)</idea>
+      <idea ac="AC2">Manual test: Lock grid to container with form inputs, click inputs and verify focus, type text and verify input works</idea>
+      <idea ac="AC3">Manual test: Lock grid to container with text, click-drag to select text and verify selection highlight appears</idea>
+      <idea ac="AC3">Manual test: Double-click word, triple-click paragraph to verify selection works</idea>
+      <idea ac="AC4">Manual test: Right-click on text beneath grid, verify browser context menu shows (Copy, Select All)</idea>
+      <idea ac="AC4">Manual test: Right-click on image, verify image context menu (Save Image, Copy Image)</idea>
+      <idea ac="AC4">Manual test: Right-click on link, verify link context menu (Open Link, Copy Link Address)</idea>
+      <idea ac="AC4">Manual test: Right-click on element beneath grid, select "Inspect Element", verify DevTools highlights page element (not shadow host)</idea>
+      <idea ac="AC5">Performance test: Create button with timestamp logger, click without grid (baseline), lock grid, click with grid, calculate latency delta (target: less than 16ms, ideally less than 1ms)</idea>
+      <idea ac="AC5">Performance test: Use Chrome DevTools Performance profiler to verify no blocking tasks or event handling overhead</idea>
+      <idea ac="AC1,AC2">Edge case test: Create buttons with very high z-index (9999), lock grid (z-index: 999), verify buttons still clickable despite higher z-index</idea>
+      <idea ac="AC1,AC2">Edge case test: Lock grid to web component with Shadow DOM, click elements inside component's shadow root, verify event propagation through multiple shadow boundaries</idea>
+      <idea ac="AC1">Edge case test: Lock grid to container with elements having pointer-events: none, verify grid doesn't re-enable pointer-events on disabled elements</idea>
+      <idea ac="ALL">Cross-browser test: Test in Chrome (primary target 88+), Edge, Brave, Opera (Chromium-based), document any behavior differences</idea>
+      <idea ac="AC2">Accessibility test: Tab through elements beneath grid, verify focus indicators display correctly, test Space/Enter key activation on focused buttons</idea>
+    </ideas>
+  </tests>
+</story-context>

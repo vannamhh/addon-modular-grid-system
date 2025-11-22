@@ -211,6 +211,147 @@
     </div>
     
     <div class="section">
+      <h2>Section 10: Click-Through Transparency (Story 1.4)</h2>
+      
+      <h3>10.1 Button Click Tests (Task 2)</h3>
+      <div id="buttonTestArea" style="position: relative; background: #e8f5e9; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then click buttons below:</p>
+        <button onclick="logEvent('Button Default Z-Index')" style="z-index: auto;">Default Z-Index</button>
+        <button onclick="logEvent('Button Z-Index 1')" style="z-index: 1; position: relative;">Z-Index 1</button>
+        <button onclick="logEvent('Button Z-Index 10')" style="z-index: 10; position: relative;">Z-Index 10</button>
+        <button onclick="logEvent('Button Z-Index 100')" style="z-index: 100; position: relative;">Z-Index 100</button>
+        <button onclick="logEvent('Button Z-Index 9999')" style="z-index: 9999; position: relative;">Z-Index 9999</button>
+        <div id="buttonLog" style="margin-top: 10px; padding: 5px; background: white; font-family: monospace; font-size: 12px; min-height: 20px;"></div>
+      </div>
+      
+      <h3>10.2 Link Click Tests (Task 3)</h3>
+      <div id="linkTestArea" style="position: relative; background: #e3f2fd; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then test links:</p>
+        <a href="#section10" onclick="logEvent('Internal Link #section10'); return false;">Internal Anchor Link</a> |
+        <a href="https://example.com" target="_blank" onclick="logEvent('External Link'); return false;">External Link</a> |
+        <a href="#test" onclick="logEvent('Link Hover Test')">Hover Me (check :hover styles)</a>
+        <p style="margin: 10px 0 0 0; font-size: 12px;">Ctrl+Click (Cmd+Click on Mac) on external link to test new tab opening</p>
+      </div>
+      
+      <h3>10.3 Form Input Tests (Task 4)</h3>
+      <div id="formTestArea" style="position: relative; background: #fff3e0; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then interact with form elements:</p>
+        <form onsubmit="logEvent('Form Submitted'); return false;">
+          <input type="text" placeholder="Text input" style="display: block; margin: 5px 0; width: 200px;" onfocus="logEvent('Text Input Focused')" /><br/>
+          <textarea placeholder="Textarea" style="display: block; margin: 5px 0; width: 200px; height: 50px;" onfocus="logEvent('Textarea Focused')"></textarea><br/>
+          <label><input type="checkbox" onclick="logEvent('Checkbox Clicked')"/> Checkbox</label><br/>
+          <label><input type="radio" name="testRadio" onclick="logEvent('Radio 1 Clicked')"/> Radio 1</label>
+          <label><input type="radio" name="testRadio" onclick="logEvent('Radio 2 Clicked')"/> Radio 2</label><br/>
+          <select onfocus="logEvent('Select Focused')" onchange="logEvent('Select Changed')">
+            <option>Option 1</option>
+            <option>Option 2</option>
+            <option>Option 3</option>
+          </select><br/>
+          <button type="submit" style="margin-top: 10px;">Submit Form</button>
+        </form>
+      </div>
+      
+      <h3>10.4 Text Selection Tests (Task 5)</h3>
+      <div id="textSelectionArea" style="position: relative; background: #f3e5f5; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then test text selection:</p>
+        <p>This is a paragraph with multiple words to test selection. Try clicking and dragging to select text. Double-click a word to select it. Triple-click to select the entire paragraph.</p>
+        <p>You can also use Ctrl+A (Cmd+A on Mac) to select all text in this container. Selection highlight color should display correctly beneath the grid overlay.</p>
+      </div>
+      
+      <h3>10.5 Context Menu Tests (Task 6)</h3>
+      <div id="contextMenuArea" style="position: relative; background: #fce4ec; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then right-click elements below:</p>
+        <p>Right-click this text (should show: Copy, Select All)</p>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" 
+             alt="Test Image" 
+             style="width: 100px; height: 100px; background: #ddd; border: 1px solid #999;" 
+             title="Right-click me (should show: Save Image, Copy Image)" />
+        <p><a href="https://example.com">Right-click this link</a> (should show: Open Link, Copy Link Address)</p>
+        <input type="text" value="Right-click me" readonly style="width: 200px;" title="Should show: Cut, Copy, Paste" />
+      </div>
+      
+      <h3>10.6 DevTools Inspect Element (Task 7)</h3>
+      <div id="devtoolsTestArea" style="position: relative; background: #e0f2f1; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then:</p>
+        <button id="inspectTestButton">Right-click me → Inspect Element</button>
+        <p style="margin: 10px 0 0 0; font-size: 12px;"><strong>Expected:</strong> DevTools should highlight this button (class="inspectTestButton"), NOT the shadow host or grid pattern.</p>
+      </div>
+      
+      <h3>10.7 Drag-and-Drop Tests (Task 8)</h3>
+      <div id="dragDropArea" style="position: relative; background: #fff9c4; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then drag elements:</p>
+        <div draggable="true" 
+             ondragstart="logEvent('Drag Started')" 
+             ondragend="logEvent('Drag Ended')"
+             style="display: inline-block; padding: 10px; background: #4caf50; color: white; cursor: move; margin: 5px;">
+          Drag Me
+        </div>
+        <div id="dropZone" 
+             ondragover="event.preventDefault(); this.style.background='#ffeb3b';" 
+             ondragleave="this.style.background='#e0e0e0';"
+             ondrop="event.preventDefault(); logEvent('Dropped'); this.style.background='#4caf50'; this.textContent='✅ Dropped!';"
+             style="display: inline-block; padding: 20px; background: #e0e0e0; border: 2px dashed #999; margin: 5px; min-width: 100px; text-align: center;">
+          Drop Zone
+        </div>
+      </div>
+      
+      <h3>10.8 Custom Event Handlers (Task 9)</h3>
+      <div id="customEventArea" style="position: relative; background: #ede7f6; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then test custom events:</p>
+        <button id="customEventButton">Click Me (addEventListener)</button>
+        <div id="hoverBox" 
+             style="display: inline-block; padding: 20px; background: #9c27b0; color: white; margin: 10px;">
+          Hover Over Me (mouseenter/mouseleave)
+        </div>
+        <div id="customEventLog" style="margin-top: 10px; padding: 5px; background: white; font-family: monospace; font-size: 12px; min-height: 20px;"></div>
+      </div>
+      
+      <h3>10.9 Performance Test - Event Latency (Task 10)</h3>
+      <div id="performanceTestArea" style="position: relative; background: #ffccbc; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;"><strong>Instructions:</strong></p>
+        <ol style="margin: 0; padding-left: 20px; font-size: 14px;">
+          <li>Click "Test Click WITHOUT Grid" 3 times → Check console for baseline timestamps</li>
+          <li>Lock grid to this container</li>
+          <li>Click "Test Click WITH Grid" 3 times → Check console for timestamps</li>
+          <li>Compare latency: should be &lt;16ms delta (ideally &lt;1ms for pure CSS passthrough)</li>
+        </ol>
+        <button onclick="testClickLatency('WITHOUT GRID')">Test Click WITHOUT Grid</button>
+        <button onclick="testClickLatency('WITH GRID')">Test Click WITH Grid</button>
+        <button onclick="clearPerformanceLog()">Clear Log</button>
+        <div id="performanceLog" style="margin-top: 10px; padding: 10px; background: white; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 200px; overflow-y: auto;"></div>
+      </div>
+      
+      <h3>10.10 Edge Case - Z-Index Stacking (Task 11)</h3>
+      <div id="zIndexTestArea" style="position: relative; background: #c8e6c9; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container (grid z-index: 999). Buttons with higher z-index should still be clickable:</p>
+        <button onclick="logEvent('Z-Index 1000 Clicked')" style="z-index: 1000; position: relative;">Z-Index 1000</button>
+        <button onclick="logEvent('Z-Index 5000 Clicked')" style="z-index: 5000; position: relative;">Z-Index 5000</button>
+        <button onclick="logEvent('Z-Index 10000 Clicked')" style="z-index: 10000; position: relative;">Z-Index 10000 (Modal)</button>
+        <div style="position: fixed; top: 100px; right: 20px; z-index: 9999; background: #ff5722; color: white; padding: 10px;">
+          <button onclick="logEvent('Fixed Position Z-Index 9999 Clicked')" style="background: white; color: #ff5722; border: none; padding: 5px 10px; cursor: pointer;">Fixed Z-Index 9999</button>
+        </div>
+      </div>
+      
+      <h3>10.11 Edge Case - CSS pointer-events Override (Task 13)</h3>
+      <div id="pointerEventsOverrideArea" style="position: relative; background: #ffebee; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then test:</p>
+        <button onclick="logEvent('Normal Button Clicked')">Normal Button (pointer-events: auto)</button>
+        <button disabled onclick="logEvent('This should NOT fire')" style="pointer-events: none; opacity: 0.5;">Disabled Button (pointer-events: none)</button>
+        <p style="margin: 10px 0 0 0; font-size: 12px;"><strong>Expected:</strong> Normal button works, disabled button does NOT respond (grid doesn't re-enable it).</p>
+      </div>
+      
+      <h3>10.12 Accessibility - Keyboard Navigation (Task 15)</h3>
+      <div id="a11yTestArea" style="position: relative; background: #b2ebf2; padding: 15px; margin: 10px 0;">
+        <p style="margin: 0 0 10px 0;">Lock grid to this container, then use Tab key to navigate:</p>
+        <button onclick="logEvent('A11y Button 1 Clicked')" onfocus="logEvent('Button 1 Focused')">Button 1</button>
+        <button onclick="logEvent('A11y Button 2 Clicked')" onfocus="logEvent('Button 2 Focused')">Button 2</button>
+        <input type="text" placeholder="Tab to me" onfocus="logEvent('A11y Input Focused')" />
+        <a href="#" onclick="logEvent('A11y Link Clicked'); return false;" onfocus="logEvent('A11y Link Focused')">Link</a>
+        <p style="margin: 10px 0 0 0; font-size: 12px;"><strong>Test:</strong> Tab navigation, focus indicators (outlines), Space/Enter key activation.</p>
+      </div>
+    </div>
+    
+    <div class="section">
       <h2>Instructions</h2>
       <h3>Story 1.2 Tests (Hover/Highlight):</h3>
       <ol>
@@ -259,8 +400,101 @@
       document.getElementById('stressTest').innerHTML = '';
     }
     
+    // Story 1.4: Click-Through Transparency Test Functions
+    
+    // Generic event logger
+    function logEvent(message) {
+      console.log(`[Story 1.4] ${message}`);
+      
+      // Also log to button test area if button log exists
+      const buttonLog = document.getElementById('buttonLog');
+      if (buttonLog && message.includes('Button')) {
+        buttonLog.textContent = `✅ ${message} - ${new Date().toLocaleTimeString()}`;
+      }
+      
+      // Log to custom event area if custom event log exists
+      const customEventLog = document.getElementById('customEventLog');
+      if (customEventLog && (message.includes('addEventListener') || message.includes('mouseenter') || message.includes('mouseleave'))) {
+        customEventLog.textContent = `✅ ${message} - ${new Date().toLocaleTimeString()}`;
+      }
+    }
+    
+    // Performance test - click latency measurement
+    let performanceBaseline = 0;
+    let performanceTestCount = 0;
+    
+    function testClickLatency(mode) {
+      const now = performance.now();
+      performanceTestCount++;
+      
+      const log = document.getElementById('performanceLog');
+      
+      if (mode === 'WITHOUT GRID') {
+        if (performanceBaseline === 0) {
+          performanceBaseline = now;
+          log.textContent += `[BASELINE] Click ${performanceTestCount}: ${now.toFixed(2)}ms\n`;
+        } else {
+          const delta = now - performanceBaseline;
+          log.textContent += `[BASELINE] Click ${performanceTestCount}: ${now.toFixed(2)}ms (Δ ${delta.toFixed(2)}ms)\n`;
+          performanceBaseline = now;
+        }
+      } else {
+        const delta = now - performanceBaseline;
+        log.textContent += `[WITH GRID] Click ${performanceTestCount}: ${now.toFixed(2)}ms (Δ ${delta.toFixed(2)}ms)\n`;
+        
+        if (delta < 16) {
+          log.textContent += `✅ PASS: Latency ${delta.toFixed(2)}ms < 16ms target\n`;
+        } else {
+          log.textContent += `❌ FAIL: Latency ${delta.toFixed(2)}ms exceeds 16ms target\n`;
+        }
+        
+        if (delta < 1) {
+          log.textContent += `🌟 EXCELLENT: Near-zero overhead (${delta.toFixed(2)}ms)\n`;
+        }
+        
+        performanceBaseline = now;
+      }
+      
+      log.textContent += '\n';
+      log.scrollTop = log.scrollHeight;
+    }
+    
+    function clearPerformanceLog() {
+      document.getElementById('performanceLog').textContent = '';
+      performanceBaseline = 0;
+      performanceTestCount = 0;
+    }
+    
+    // Custom event handlers setup (Task 9)
+    document.addEventListener('DOMContentLoaded', function() {
+      // Custom button with addEventListener
+      const customEventButton = document.getElementById('customEventButton');
+      if (customEventButton) {
+        customEventButton.addEventListener('click', function(event) {
+          logEvent('Custom Button Clicked via addEventListener');
+          console.log('Event.target:', event.target);
+          console.log('Event.target matches button:', event.target === customEventButton);
+        });
+      }
+      
+      // Hover box with mouseenter/mouseleave
+      const hoverBox = document.getElementById('hoverBox');
+      if (hoverBox) {
+        hoverBox.addEventListener('mouseenter', function() {
+          logEvent('mouseenter event fired');
+          hoverBox.style.background = '#4caf50';
+        });
+        
+        hoverBox.addEventListener('mouseleave', function() {
+          logEvent('mouseleave event fired');
+          hoverBox.style.background = '#9c27b0';
+        });
+      }
+    });
+    
     // Log page load
     console.log('Test page loaded. Activate the extension to begin testing.');
+    console.log('Story 1.4: Click-Through Transparency test functions ready.');
   </script>
 </body>
 </html>

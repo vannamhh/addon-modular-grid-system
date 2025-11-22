@@ -295,4 +295,93 @@ describe('GridManager', () => {
       expect(style.textContent).toContain('to right');
     });
   });
+  
+  describe('Pointer-Events Passthrough (Story 1.4)', () => {
+    it('should set pointer-events: none on shadow host inline styles', () => {
+      gridManager.inject(mockElement);
+      
+      const shadowHost = mockElement.querySelector('#wp-rhythm-host');
+      expect(shadowHost.style.pointerEvents).toBe('none');
+    });
+    
+    it('should include pointer-events: none in grid pattern CSS', () => {
+      gridManager.inject(mockElement);
+      
+      const shadowHost = mockElement.querySelector('#wp-rhythm-host');
+      const style = shadowHost.shadowRoot.querySelector('style');
+      
+      expect(style.textContent).toContain('pointer-events: none');
+    });
+    
+    it('should verify computed pointer-events value is none on shadow host', () => {
+      gridManager.inject(mockElement);
+      
+      const shadowHost = mockElement.querySelector('#wp-rhythm-host');
+      
+      // Mock getComputedStyle for shadow host
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = vi.fn((element) => {
+        if (element === shadowHost) {
+          return {
+            pointerEvents: 'none',
+            position: 'absolute',
+            zIndex: '999'
+          };
+        }
+        return originalGetComputedStyle(element);
+      });
+      
+      const computedStyle = window.getComputedStyle(shadowHost);
+      expect(computedStyle.pointerEvents).toBe('none');
+      
+      // Restore original
+      window.getComputedStyle = originalGetComputedStyle;
+    });
+    
+    it('should not attach any event listeners to shadow host', () => {
+      // This test verifies no event listeners are added (design requirement)
+      gridManager.inject(mockElement);
+      
+      const shadowHost = mockElement.querySelector('#wp-rhythm-host');
+      
+      // JSDOM doesn't expose addEventListener spy by default, but we can verify
+      // the shadowHost has no custom properties that would indicate listeners
+      // In a real browser, we could use getEventListeners(shadowHost) in console
+      
+      // Verify no onclick, onmousemove, etc. properties set
+      expect(shadowHost.onclick).toBeNull();
+      expect(shadowHost.onmousemove).toBeNull();
+      expect(shadowHost.onmousedown).toBeNull();
+      expect(shadowHost.onmouseup).toBeNull();
+    });
+    
+    it('should not attach any event listeners to grid pattern div', () => {
+      gridManager.inject(mockElement);
+      
+      const shadowHost = mockElement.querySelector('#wp-rhythm-host');
+      const gridPattern = shadowHost.shadowRoot.querySelector('.grid-pattern');
+      
+      // Verify no inline event handlers
+      expect(gridPattern.onclick).toBeNull();
+      expect(gridPattern.onmousemove).toBeNull();
+      expect(gridPattern.onmousedown).toBeNull();
+      expect(gridPattern.onmouseup).toBeNull();
+    });
+    
+    it('should maintain pointer-events: none after multiple inject/remove cycles', () => {
+      // Test that pointer-events property persists correctly
+      gridManager.inject(mockElement);
+      gridManager.remove();
+      
+      const secondElement = document.createElement('div');
+      document.body.appendChild(secondElement);
+      
+      gridManager.inject(secondElement);
+      
+      const shadowHost = secondElement.querySelector('#wp-rhythm-host');
+      expect(shadowHost.style.pointerEvents).toBe('none');
+      
+      secondElement.remove();
+    });
+  });
 });

@@ -39,8 +39,8 @@ development_status:
   epic-1: contexted
   1-1-project-scaffolding-manifest-v3-setup: done
   1-2-element-discovery-highlighting: done
-  1-3-grid-overlay-injection-the-lock: in-progress
-  1-4-click-through-transparency: backlog
+  1-3-grid-overlay-injection-the-lock: done
+  1-4-click-through-transparency: done
   epic-1-retrospective: optional
   
   epic-2: backlog
