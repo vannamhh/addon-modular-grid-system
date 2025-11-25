@@ -36,7 +36,7 @@ Furthermore, existing tools often hijack mouse events (blocking interactions), f
 * **FR1 \- Targeted Activation:** The user activates the extension and hovers to highlight DOM elements. Upon clicking an element, a 14px grid is "pinned" to that element (Active Container), resetting the origin coordinates (0,0) to the top-left corner of the element's padding-box.  
 * **FR2 \- Grid Visualization:** The grid must be rendered as fixed 14px x 14px squares. Lines should be 1px wide, using a high-contrast color (Cyan/Magenta) with approximately 30-50% opacity. The grid must scroll naturally with the element's content (absolute positioning relative to the container).  
 * **FR3 \- Transparent Interaction:** The grid overlay container must possess the CSS property pointer-events: none. All clicks, text selection, or drag operations must pass through the grid to the underlying web element.  
-* **FR4 \- Smart Measurement Mode:** Holding the **Alt** key activates a mode displaying the distance (delta X/Y) from the mouse cursor or the edge of the hovered element to the nearest grid line. This mode automatically deactivates when the Alt key is released.
+
 
 ### **2.2 Non-Functional Requirements**
 
@@ -44,7 +44,7 @@ Furthermore, existing tools often hijack mouse events (blocking interactions), f
 * **NFR2 \- Isolation:** Extension UI components (tooltips, toggle buttons) must be rendered within a **Shadow DOM** to prevent CSS bleeding (style conflicts) from the host page.  
 * **NFR3 \- Tech Stack Constraints:** Utilize **Vanilla JavaScript** (no heavy frameworks) to minimize the injection footprint. Adhere to **Chrome Extension Manifest V3** architecture.  
 * **NFR4 \- Platform Scope:** Support Desktop Chrome/Chromium browsers only. Mobile support is out of scope for the MVP.  
-* **NFR5 \- Fixed Unit:** Grid size is hardcoded to **14px**. No UI for custom sizing is provided in the MVP.
+* **NFR5 \- Configurable Unit:** Grid size should be configurable (default 14px). UI for custom sizing will be provided in Epic 3.
 
 ## **3\. User Interface Design Goals**
 
@@ -111,9 +111,13 @@ Minimalist, Utilitarian, "Invisible". The user interface must not compete for at
 
 **Goal:** Establish the project foundation (Vite \+ Manifest V3) and deliver core functionality: extension activation, element selection, and basic 14px grid rendering.
 
-### **5.2 Epic 2: Smart Measurement & Polish**
+### **5.2 Epic 2: Core Stabilization & Launch Prep**
 
-**Goal:** Finalize the tool with advanced measurement functionality (Story 4\) and optimize for release.
+**Goal:** Optimize application performance, handle edge cases, and finalize necessary assets for the final product packaging to ensure a stable v1.0 launch.
+
+### **5.3 Epic 3: Configuration & Workflow Optimization**
+
+**Goal:** Enhance user workflow with global shortcuts and provide a UI for customizing grid settings (size, color) with persistence.
 
 ## **6\. Epic Details**
 
@@ -158,44 +162,47 @@ Minimalist, Utilitarian, "Invisible". The user interface must not compete for at
   3. Users can select text located beneath the grid.  
   4. Users can right-click to open the Chrome Context Menu on elements beneath the grid (Inspect Element).
 
-### **6.2 Epic 2: Smart Measurement & Polish**
+### **6.2 Epic 2: Core Stabilization & Launch Prep**
 
-**Expanded Goal:** Implement the Smart Measurement tool to help developers detect precise pixel deviations, optimize application performance, and finalize necessary assets for the final product packaging.
+**Expanded Goal:** Optimize application performance, handle edge cases, and finalize necessary assets for the final product packaging to ensure a stable v1.0 launch.
 
-#### **6.2.1 Story 2.1: Measurement Core Logic (The Brain)**
-
-* **User Story:** As a Developer, I want the system to calculate the distance from the mouse cursor to the nearest grid line when I activate measurement mode so that I know my deviation in pixels.  
-* **Acceptance Criteria:**  
-  1. Calculation logic runs only when the Alt key is held (keydown) and stops immediately upon release (keyup).  
-  2. The system captures mouse coordinates (Mouse X, Y) relative to the Active Container.  
-  3. Delta Calculation Formula:  
-     * Distance to nearest vertical line \= MouseX % 14\. If result \> 7, Delta is negative (distance to the next line).  
-  4. Output is an object { deltaX, deltaY } updated continuously on mouse move.
-
-#### **6.2.2 Story 2.2: Measurement Tooltip UI (The Face)**
-
-* **User Story:** As a User, I want to see a small tooltip following my mouse cursor displaying the Delta values so that I can read the results immediately without looking away.  
-* **Acceptance Criteria:**  
-  1. Display a Tooltip containing text formatted as x: \+2px, y: \-1px.  
-  2. Tooltip must reside inside the Shadow DOM to remain unaffected by the page CSS.  
-  3. Tooltip position always stays next to the mouse cursor (with a 10-15px offset) to avoid obscuring the measurement point.  
-  4. Tooltip automatically hides when the user releases the Alt key.
-
-#### **6.2.3 Story 2.3: Performance Optimization & Polish**
+#### **6.2.1 Story 2.1: Performance Optimization & Polish**
 
 * **User Story:** As a User, I want the tool to operate smoothly even when I scroll the page or resize the window, without consuming excessive browser RAM.  
 * **Acceptance Criteria:**  
-  1. Use requestAnimationFrame for all mousemove events in measurement mode.  
+  1. Use requestAnimationFrame for all mousemove events (throttling).  
   2. Handle scroll and resize events: The grid and measurement area must maintain correct positioning relative to the target element (or automatically recalculate position).  
   3. Cleanup: Ensure all Event Listeners are removed when the Extension is disabled or switched to another element to avoid Memory Leaks.
 
-#### **6.2.4 Story 2.4: Packaging & Assets Preparation**
+#### **6.2.2 Story 2.2: Packaging & Assets Preparation**
 
 * **User Story:** As a Product Owner, I want a complete set of installation files and image assets so that I can upload to the Chrome Web Store or distribute to testers.  
 * **Acceptance Criteria:**  
   1. Complete set of standard Icon sizes (16, 32, 48, 128px).  
   2. Complete manifest.json file with metadata (name, description, version).  
   3. npm run package command (or equivalent) generates a .zip file containing the optimized production build (minified code).
+
+### **6.3 Epic 3: Configuration & Workflow Optimization**
+
+**Expanded Goal:** Enhance user workflow with global shortcuts and provide a UI for customizing grid settings (size, color) with persistence.
+
+#### **6.3.1 Story 3.1: Global Toggle Shortcut**
+
+* **User Story:** As a User, I want to be able to toggle the grid on/off using a keyboard shortcut so that I can quickly check alignment without moving my mouse to the toolbar.  
+* **Acceptance Criteria:**  
+  1. Define a default shortcut (e.g., Ctrl+Shift+G or Command+Shift+G).  
+  2. The shortcut toggles the active state of the extension (same behavior as clicking the icon).  
+  3. Ensure the shortcut does not conflict with common browser shortcuts.
+
+#### **6.3.2 Story 3.2: Custom Grid Settings UI & Persistence**
+
+* **User Story:** As a User, I want to customize the grid size and color via a popup UI and have these settings saved so that I can use the tool on different projects with different requirements.  
+* **Acceptance Criteria:**  
+  1. Create a Popup UI (popup.html) with inputs for:  
+     * Grid Size (px) - Default: 14  
+     * Grid Color (Color Picker or Hex Input) - Default: Cyan/Magenta  
+  2. Save settings using chrome.storage.sync (or local) so they persist across sessions.  
+  3. The Content Script must listen for storage changes and update the grid immediately (or on next activation).
 
 ## **7\. Checklist Results Report**
 

@@ -109,21 +109,6 @@ Manages the lifecycle of the Grid Overlay.
       \<div class="tooltip hidden"\>\</div\>  
   \</div\>
 
-### **4.4. src/content/MeasurementEngine.js**
-
-Handles math and measurement logic.
-
-* **Responsibility:**  
-  * Listen for Alt key (keydown/keyup).  
-  * Calculate Delta: (MouseX \- Rect.left) % 14\.  
-  * Update Tooltip content and position inside Shadow DOM.  
-* **Delta Algorithm:**  
-  // Pseudo-code  
-  const localX \= event.clientX \- rect.left;  
-  const remainderX \= localX % 14;  
-  const deltaX \= remainderX \> 7 ? remainderX \- 14 : remainderX;  
-  // Result: \-7 to \+7 (px)
-
 ## **5\. Core Workflows**
 
 ### **5.1. Activation & Locking Flow**
@@ -144,23 +129,6 @@ sequenceDiagram
     end  
     GridMgr-\>\>DOM: Append Shadow Host (Grid)  
     GridMgr-\>\>User: Display 14px Grid
-
-### **5.2. Measurement Mode Flow**
-
-sequenceDiagram  
-    participant User  
-    participant MeasureEng  
-    participant TooltipUI
-
-    User-\>\>MeasureEng: Hold Alt Key (KeyDown)  
-    MeasureEng-\>\>TooltipUI: Show Tooltip  
-    loop Mouse Move  
-        User-\>\>MeasureEng: Move Mouse  
-        MeasureEng-\>\>MeasureEng: Calculate Delta (Mouse % 14\)  
-        MeasureEng-\>\>TooltipUI: Update Text (x: \+2, y: \-1) & Position  
-    end  
-    User-\>\>MeasureEng: Release Alt Key (KeyUp)  
-    MeasureEng-\>\>TooltipUI: Hide Tooltip
 
 ## **6\. Project Structure**
 

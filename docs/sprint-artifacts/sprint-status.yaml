@@ -43,9 +43,12 @@ development_status:
   1-4-click-through-transparency: done
   epic-1-retrospective: optional
   
-  epic-2: backlog
-  2-1-measurement-core-logic-the-brain: backlog
-  2-2-measurement-tooltip-ui-the-face: backlog
-  2-3-performance-optimization-polish: backlog
-  2-4-packaging-assets-preparation: backlog
+  epic-2: contexted
+  2-1-performance-optimization-polish: drafted
+  2-2-packaging-assets-preparation: backlog
   epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-global-toggle-shortcut: backlog
+  3-2-custom-grid-settings-ui-persistence: backlog
+  epic-3-retrospective: optional
