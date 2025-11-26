@@ -1,0 +1,169 @@
+<story-context id="docs/sprint-artifacts/3-2-custom-grid-settings-ui-persistence.context.xml" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.2</storyId>
+    <title>Custom Grid Settings UI &amp; Persistence</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-2-custom-grid-settings-ui-persistence.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>User</asA>
+    <iWant>to customize the grid size and color via a popup UI and have these settings saved</iWant>
+    <soThat>I can use the tool on different projects with different requirements</soThat>
+    <tasks>
+- [ ] Task 1 — Popup UI Implementation (AC: #1)
+  - [ ] 1.1: Create `src/popup/index.html` with inputs for Grid Size and Color.
+  - [ ] 1.2: Create `src/popup/style.css` for basic styling (match extension aesthetic).
+  - [ ] 1.3: Create `src/popup/popup.js` to handle form interactions.
+  - [ ] 1.4: Update `src/manifest.js` to register the `default_popup`.
+
+- [ ] Task 2 — Settings Persistence (AC: #2)
+  - [ ] 2.1: Implement logic in `src/popup/popup.js` to load existing settings from `chrome.storage.sync` on open.
+  - [ ] 2.2: Implement logic to save settings to `chrome.storage.sync` on change (or save button click).
+  - [ ] 2.3: Validate inputs (e.g., size > 0, valid hex color) before saving.
+
+- [ ] Task 3 — Content Script Integration (AC: #3)
+  - [ ] 3.1: Create `src/content/modules/ConfigManager.js` to manage settings retrieval and updates.
+  - [ ] 3.2: In `ConfigManager`, listen for `chrome.storage.onChanged` and broadcast/notify updates.
+  - [ ] 3.3: Update `src/content/modules/GridManager.js` to accept dynamic configuration (size, color) instead of hardcoded constants.
+  - [ ] 3.4: Ensure `GridManager` re-renders the grid if active when settings change.
+
+- [ ] Task 4 — Verification &amp; Testing
+  - [ ] 4.1: Verify Popup opens and saves values correctly.
+  - [ ] 4.2: Verify settings persist after browser restart.
+  - [ ] 4.3: Verify grid updates in real-time when settings change in Popup.
+  - [ ] 4.4: Verify default values are used if no settings exist.
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Settings UI:**
+   - Create a Popup UI (`popup.html`) accessible from the extension toolbar icon.
+   - Include an input field for **Grid Size** (number) defaulting to 14.
+   - Include an input field for **Grid Color** (color picker or hex input) defaulting to Cyan (#00FFFF).
+   - Changes are saved automatically or via a "Save" button.
+
+2. **Persistence:**
+   - Save settings using `chrome.storage.sync` (falling back to `local` if needed) so they persist across browser sessions and restarts.
+
+3. **Reactivity:**
+   - The Content Script must listen for storage changes (`chrome.storage.onChanged`).
+   - If the grid is active, it must update immediately when settings change.
+   - New settings apply to all tabs (eventually) or the active tab immediately.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: Configuration &amp; Workflow Optimization</title>
+        <section>Detailed Design</section>
+        <snippet>
+          Defines the Popup UI structure, Storage Schema (gridSettings: { size, color }), and the ConfigManager module responsibility.
+          Specifies using chrome.storage.sync for persistence and chrome.storage.onChanged for reactivity.
+        </snippet>
+      </doc>
+      <doc>
+        <path>docs/prd/6. Epic Details.md</path>
+        <title>Epic Details</title>
+        <section>6.3.2 Story 3.2: Custom Grid Settings UI &amp; Persistence</section>
+        <snippet>
+          Requirements for Popup UI with Grid Size (default 14) and Grid Color (default Cyan).
+          Mandates persistence across sessions and immediate grid updates upon change.
+        </snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Technical Architecture Document</title>
+        <section>System Diagram &amp; Component Architecture</section>
+        <snippet>
+          Outlines the interaction between Popup, Storage, and Content Script.
+          Mentions src/popup directory structure and ConfigManager module role.
+        </snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>src/manifest.js</path>
+        <kind>config</kind>
+        <symbol>manifest</symbol>
+        <reason>Needs update to register default_popup and storage permission.</reason>
+      </artifact>
+      <artifact>
+        <path>src/content/modules/GridManager.js</path>
+        <kind>module</kind>
+        <symbol>GridManager</symbol>
+        <reason>Currently uses hardcoded GRID_SIZE and GRID_COLOR constants. Needs refactoring to accept dynamic configuration.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency>
+        <name>chrome.storage</name>
+        <version>Manifest V3 API</version>
+      </dependency>
+      <dependency>
+        <name>chrome.action</name>
+        <version>Manifest V3 API</version>
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture</type>
+      <description>Use Vanilla JS for Popup logic. No frameworks.</description>
+    </constraint>
+    <constraint>
+      <type>Security</type>
+      <description>Validate inputs (size range, color format) before saving to storage to prevent injection or errors.</description>
+    </constraint>
+    <constraint>
+      <type>Performance</type>
+      <description>Storage access must be asynchronous. Grid updates should be efficient (re-render only if active).</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Settings Object</name>
+      <kind>Storage Schema</kind>
+      <signature>
+{
+  "gridSettings": {
+    "size": number, // default 14
+    "color": string // hex, default "#00FFFF"
+  }
+}
+      </signature>
+    </interface>
+    <interface>
+      <name>ConfigManager</name>
+      <kind>Module Interface</kind>
+      <signature>
+class ConfigManager {
+  async getSettings(): Promise&lt;Settings&gt;;
+  onSettingsChange(callback: (settings: Settings) => void): void;
+}
+      </signature>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Use manual verification for UI interactions and persistence.
+      Unit tests for ConfigManager logic (validation, defaults) using Vitest if applicable.
+    </standards>
+    <locations>
+      <location>tests/</location>
+    </locations>
+    <ideas>
+      <idea>Verify Popup opens and displays default values on first run.</idea>
+      <idea>Verify changes are saved to storage and persist after restart.</idea>
+      <idea>Verify GridManager updates visual style immediately when settings change.</idea>
+      <idea>Test input validation (e.g. negative numbers for size).</idea>
+    </ideas>
+  </tests>
+</story-context>

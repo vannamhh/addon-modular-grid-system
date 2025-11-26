@@ -62,3 +62,101 @@ h1 {
 .status span.active {
   color: #00FFFF;
 }
+
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 16px 0;
+}
+
+.settings-group h2 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-group {
+  margin-bottom: 12px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.input-group input[type="number"],
+.input-group input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #00FFFF;
+  outline: none;
+}
+
+.color-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-input-wrapper input[type="color"] {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+.color-input-wrapper input[type="text"] {
+  flex: 1;
+  font-family: monospace;
+}
+
+.save-btn {
+  width: 100%;
+  padding: 8px;
+  background: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.save-btn:hover {
+  background: #e0e0e0;
+}
+
+.save-btn:active {
+  transform: translateY(1px);
+}
+
+.save-status {
+  margin-top: 8px;
+  font-size: 11px;
+  text-align: center;
+  min-height: 16px;
+  color: #28a745;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.save-status.visible {
+  opacity: 1;
+}

@@ -5,6 +5,7 @@
 
 import ElementSelector from './ElementSelector.js';
 import GridManager from './GridManager.js';
+import ConfigManager from './ConfigManager.js';
 
 // Storage keys
 const STORAGE_KEY_ACTIVE = 'wp-rhythm-inspector-active';
@@ -40,6 +41,11 @@ class InspectorController {
     
     // Initialize GridManager module
     this.gridManager = new GridManager();
+
+    // Connect ConfigManager to GridManager
+    ConfigManager.subscribe((settings) => {
+      this.gridManager.updateConfig(settings);
+    });
     
     // Register element selection callback
     this.elementSelector.onElementSelected((element) => {

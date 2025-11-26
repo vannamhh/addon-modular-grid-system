@@ -11,7 +11,8 @@ vi.mock('../../../src/content/modules/GridManager.js', () => {
         inject: vi.fn(),
         remove: vi.fn(),
         isActive: vi.fn(() => false),
-        getGridHost: vi.fn(() => null)
+        getGridHost: vi.fn(() => null),
+        updateConfig: vi.fn()
       };
     })
   };
@@ -38,6 +39,24 @@ describe('InspectorController', () => {
     // Clear module cache to get fresh singleton instance
     vi.resetModules();
     
+    // Mock chrome API
+    global.chrome = {
+      storage: {
+        sync: {
+          get: vi.fn(() => Promise.resolve({})),
+          set: vi.fn(() => Promise.resolve()),
+        },
+        onChanged: {
+          addListener: vi.fn(),
+        }
+      },
+      runtime: {
+        onMessage: {
+          addListener: vi.fn()
+        }
+      }
+    };
+
     // Import controller after globals are set
     const module = await import('../../../src/content/modules/InspectorController.js');
     InspectorController = module.default;

@@ -3,13 +3,10 @@
  * Handles injection/removal of grid pattern and element positioning
  */
 
-// Grid configuration constants
-const GRID_SIZE = 14;           // 14px × 14px squares
-const GRID_COLOR = '#00FFFF';   // Cyan primary color
-const GRID_OPACITY = 0.35;      // 35% opacity
-const LINE_WIDTH = 1;           // 1px line thickness
 const SHADOW_HOST_ID = 'wp-rhythm-host';
 const Z_INDEX = 999;            // Z-index (reduced from 9999 to avoid conflicts with ruler extensions)
+const GRID_OPACITY = 0.35;      // 35% opacity
+const LINE_WIDTH = 1;           // 1px line thickness
 
 class GridManager {
   constructor() {
@@ -21,8 +18,38 @@ class GridManager {
     
     /** @type {string|null} Original position value for restoration */
     this.originalPosition = null;
+
+    /** @type {Object} Current grid configuration */
+    this.config = {
+      size: 14,
+      color: '#00FFFF'
+    };
   }
   
+  /**
+   * Update configuration and re-render if active
+   * @param {Object} newConfig - New configuration object
+   */
+  updateConfig(newConfig) {
+    this.config = { ...this.config, ...newConfig };
+    if (this.isActive()) {
+      this.refreshGridStyle();
+    }
+  }
+
+  /**
+   * Refresh the grid style in the shadow DOM
+   * @private
+   */
+  refreshGridStyle() {
+    if (!this.currentGridHost || !this.currentGridHost.shadowRoot) return;
+    
+    const style = this.currentGridHost.shadowRoot.querySelector('style');
+    if (style) {
+      style.textContent = this.generateGridCSS();
+    }
+  }
+
   /**
    * Inject grid overlay into target element
    * Removes previous grid if exists (single instance rule)
@@ -204,6 +231,7 @@ class GridManager {
    * @returns {string} CSS string
    */
   generateGridCSS() {
+    const { size, color } = this.config;
     return `
       .grid-pattern {
         position: absolute;
@@ -211,13 +239,13 @@ class GridManager {
         background-image:
           repeating-linear-gradient(
             to bottom,
-            ${GRID_COLOR} 0 ${LINE_WIDTH}px,
-            transparent ${LINE_WIDTH}px ${GRID_SIZE}px
+            ${color} 0 ${LINE_WIDTH}px,
+            transparent ${LINE_WIDTH}px ${size}px
           ),
           repeating-linear-gradient(
             to right,
-            ${GRID_COLOR} 0 ${LINE_WIDTH}px,
-            transparent ${LINE_WIDTH}px ${GRID_SIZE}px
+            ${color} 0 ${LINE_WIDTH}px,
+            transparent ${LINE_WIDTH}px ${size}px
           );
         opacity: ${GRID_OPACITY};
         pointer-events: none;
@@ -227,3 +255,4 @@ class GridManager {
 }
 
 export default GridManager;
+

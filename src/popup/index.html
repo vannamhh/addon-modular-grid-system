@@ -1,17 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WP 14px Rhythm Inspector</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="popup-container">
     <h1>WP 14px Rhythm Inspector</h1>
-    <button id="toggleBtn" class="toggle-btn">Activate Inspector</button>
-    <p class="status">Status: <span id="statusText">Inactive</span></p>
+
+    <div class="control-group">
+      <button id="toggleBtn" class="toggle-btn">Activate Inspector</button>
+      <p class="status">Status: <span id="statusText">Inactive</span></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="settings-group">
+      <h2>Grid Settings</h2>
+
+      <div class="input-group">
+        <label for="gridSize">Grid Size (px)</label>
+        <input type="number" id="gridSize" min="1" max="100" value="14">
+      </div>
+
+      <div class="input-group">
+        <label for="gridColor">Grid Color</label>
+        <div class="color-input-wrapper">
+          <input type="color" id="gridColor" value="#00FFFF">
+          <input type="text" id="gridColorText" value="#00FFFF" maxlength="7">
+        </div>
+      </div>
+
+      <button id="saveBtn" class="save-btn">Save Settings</button>
+      <p id="saveStatus" class="save-status"></p>
+    </div>
   </div>
-  <script src="index.js" type="module"></script>
+  <script src="popup.js" type="module"></script>
 </body>
+
 </html>
