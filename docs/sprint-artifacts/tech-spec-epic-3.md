@@ -148,3 +148,13 @@ This implementation aligns with the existing **Manifest V3** architecture.
 
 ### Automated Tests
 *   **Unit Tests:** Test `ConfigManager` logic (default fallback, validation) using Vitest.
+
+## Post-Review Follow-ups
+
+Following the Senior Developer Review (AI) of Story 3.2 (Custom Grid Settings UI & Persistence) performed on 2025-11-26, add the following action items to the epic-level follow-up list:
+
+- [ ] [Med] Add unit tests for `src/content/modules/ConfigManager.js` — verify defaults, load behavior, storage change handling, and subscribe notifications. (Related story: 3.2)
+- [ ] [Med] Add unit tests for `src/content/modules/GridManager.js` — verify CSS generation `generateGridCSS()` for multiple sizes/colors, `updateConfig()` re-render behavior, and lifecycle (inject/remove). (Related story: 3.2)
+- [ ] [Med] Add automated popup tests (mocked chrome.* APIs) covering load/save/validation and toggle messaging. (Related story: 3.2)
+- [ ] [Med] Investigate and fix active-state persistence mismatch across popup and content script contexts — align on `chrome.storage.local` and/or ensure both sides read the same storage key. (Related story: 3.2)
+

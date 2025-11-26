@@ -18,4 +18,8 @@ Routing guidance:
 | 2025-11-26 | 2.1 | 2 | TechDebt | Low | TBD | Open | Make GridManager.z-index configurable or document expected z-index behavior (file: src/content/modules/GridManager.js:11-12) |
 | 2025-11-26 | 2.1 | 2 | Enhancement | Low | TBD | Open | Replace system `zip` packaging step with a cross-platform Node-based packaging solution (file: package.json:9) |
 | 2025-11-26 | 2.2 | 2 | Bug | High | TBD | Open | Add CI workflow to run `npm run package`, unzip `dist.zip` and assert `manifest.json` at archive root and required icon files present (Story 2.2) |
+| 2025-11-26 | 3.2 | 3 | Test | Med | TBD | Open | Add unit tests for `ConfigManager` and cover storage/fallback behavior (file: src/content/modules/ConfigManager.js) |
+| 2025-11-26 | 3.2 | 3 | Test | Med | TBD | Open | Add unit tests for `GridManager` focusing on `generateGridCSS()` and `updateConfig()` behavior (file: src/content/modules/GridManager.js) |
+| 2025-11-26 | 3.2 | 3 | Test | Med | TBD | Open | Add automated popup tests (mock chrome APIs) to verify save/load/validation/TOGGLE messaging (file: src/popup/popup.js) |
+| 2025-11-26 | 3.2 | 3 | Bug | Med | TBD | Open | Fix active-state persistence mismatch (popup uses chrome.storage.local vs InspectorController reads localStorage) (src/popup/popup.js:37, src/content/modules/InspectorController.js:65,152) |
 
