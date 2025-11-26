@@ -171,3 +171,11 @@ sequenceDiagram
 *   **Performance Testing:** Use Chrome DevTools Performance tab to ensure no "Long Tasks" during hover.
 *   **Memory Testing:** Use Memory tab to check for detached DOM nodes after deactivation.
 *   **Installation Testing:** Load the generated `.zip` (unpacked) into a fresh Chrome profile to verify assets and metadata.
+
+## Post-Review Follow-ups
+
+The senior developer review for Story 2.1 produced a small set of low-severity follow-ups to track across the epic and backlog:
+
+- [ ] [Low] Make `GridManager.z-index` configurable or document the expected z-index policy to avoid conflicts with other extensions or host page components. (file: src/content/modules/GridManager.js:11-12) — Story: 2.1
+- [ ] [Low] Replace system `zip` in the `package` script with a Node-based cross-platform packaging step (e.g., npm package 'archiver' or 'zip-dir') to make CI packaging portable across operating systems. (file: package.json:9) — Story: 2.1
+- [ ] [High] Add a CI workflow to run `npm run package` and verify the resulting `dist.zip` contains `manifest.json` at the archive root and the required `src/assets` icons. This ensures packaging is validated in CI, not only locally. — Story: 2.2

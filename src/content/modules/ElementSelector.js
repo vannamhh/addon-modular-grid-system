@@ -16,6 +16,9 @@ class ElementSelector {
     /** @type {number|null} RequestAnimationFrame ID for throttling */
     this.rafId = null;
     
+    /** @type {MouseEvent|null} Latest mouse event for throttling */
+    this.lastEvent = null;
+    
     /** @type {boolean} Whether selector is currently enabled */
     this.enabled = false;
     
@@ -68,10 +71,16 @@ class ElementSelector {
    * @param {MouseEvent} event - Mouse move event
    */
   handleMouseMove(event) {
+    // Store latest event
+    this.lastEvent = event;
+
     // Only schedule new frame if none is pending
     if (this.rafId === null) {
       this.rafId = requestAnimationFrame(() => {
-        this.handleHover(event);
+        if (this.lastEvent) {
+          this.handleHover(this.lastEvent);
+          this.lastEvent = null;
+        }
         this.rafId = null;
       });
     }

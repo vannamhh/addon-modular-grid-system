@@ -15,4 +15,7 @@ Routing guidance:
 | 2025-11-22 | 1.1 | 1 | Enhancement | Low | TBD | Open | Update README features list to reflect Story 1.1 actual deliverables - file: README.md:12-15 |
 | 2025-11-22 | 1.1 | 1 | Enhancement | Low | TBD | Open | Add automated manifest validation script post-build |
 | 2025-11-22 | 1.1 | 1 | Enhancement | Low | TBD | Open | Replace placeholder icons with branded icons before Chrome Web Store submission (Epic 2) |
+| 2025-11-26 | 2.1 | 2 | TechDebt | Low | TBD | Open | Make GridManager.z-index configurable or document expected z-index behavior (file: src/content/modules/GridManager.js:11-12) |
+| 2025-11-26 | 2.1 | 2 | Enhancement | Low | TBD | Open | Replace system `zip` packaging step with a cross-platform Node-based packaging solution (file: package.json:9) |
+| 2025-11-26 | 2.2 | 2 | Bug | High | TBD | Open | Add CI workflow to run `npm run package`, unzip `dist.zip` and assert `manifest.json` at archive root and required icon files present (Story 2.2) |
 

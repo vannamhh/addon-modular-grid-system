@@ -1,0 +1,132 @@
+<story-context id="2-1-performance-optimization-polish" v="1.0">
+  <metadata>
+    <epicId>epic-2</epicId>
+    <storyId>2-1</storyId>
+    <title>Performance Optimization &amp; Polish</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMad Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-1-performance-optimization-polish.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>User</asA>
+    <iWant>the tool to operate smoothly even when I scroll the page or resize the window</iWant>
+    <soThat>I can validate alignment without lag or consuming excessive browser RAM</soThat>
+    <tasks>
+      - [ ] **Task 1: Implement RequestAnimationFrame Throttling** (AC: #1)
+        - [ ] 1.1: Refactor `ElementSelector.js` to use a `requestAnimationFrame` loop for `mousemove` handling
+        - [ ] 1.2: Ensure highlight position updates only on animation frames
+        - [ ] 1.3: Verify no visual lag during rapid mouse movement
+      - [ ] **Task 2: Implement Scroll and Resize Handling** (AC: #2)
+        - [ ] 2.1: Verify `GridManager.js` direct child injection strategy handles scrolling naturally
+        - [ ] 2.2: Add `resize` event listener (throttled) to `InspectorController` or `GridManager` to handle window resizing
+        - [ ] 2.3: Ensure grid overlay adjusts dimensions if target element resizes (optional: use `ResizeObserver`)
+      - [ ] **Task 3: Implement Comprehensive Cleanup Logic** (AC: #3)
+        - [ ] 3.1: Add `deactivate()` method to `InspectorController.js`
+        - [ ] 3.2: Ensure `ElementSelector.disable()` removes all event listeners
+        - [ ] 3.3: Ensure `GridManager.remove()` cleans up shadow host and any internal state
+        - [ ] 3.4: Verify heap snapshot shows no detached DOM nodes after toggle cycle
+      - [ ] **Task 4: Prepare Icon Assets** (AC: #4)
+        - [ ] 4.1: Generate or source 16px, 32px, 48px, 128px icons (PNG format)
+        - [ ] 4.2: Place icons in `src/assets/` directory
+      - [ ] **Task 5: Update Manifest Metadata** (AC: #5)
+        - [ ] 5.1: Update `manifest.js` (or `manifest.json`) with full description, version 1.0.0, and icon paths
+        - [ ] 5.2: Verify manifest loads correctly in Chrome
+      - [ ] **Task 6: Create Production Build Script** (AC: #6)
+        - [ ] 6.1: Add `package` script to `package.json` (using `zip` or node script)
+        - [ ] 6.2: Configure build to output to `dist`
+        - [ ] 6.3: Verify `npm run package` creates a valid `.zip` file
+      - [ ] **Task 7: Update Test Infrastructure** (AC: #1, #2, #3)
+        - [ ] 7.1: Add performance test case to `MANUAL_TESTING.md` (checking for long tasks)
+        - [ ] 7.2: Add memory leak test case to `MANUAL_TESTING.md`
+        - [ ] 7.3: Add build verification step to `MANUAL_TESTING.md`
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. **AC1-Throttled-Interaction**: All `mousemove` events for highlighting are throttled using `requestAnimationFrame` to ensure 60fps performance.
+    2. **AC2-Scroll-Resize-Stability**: The grid overlay and measurement tool (if active) maintain correct positioning relative to the target element during page scroll and window resize.
+    3. **AC3-Clean-Lifecycle**: Disabling the extension or switching target elements removes all attached Event Listeners and DOM nodes, returning the page to its original state (no memory leaks).
+    4. **AC4-Icon-Assets**: The extension includes valid 16px, 32px, 48px, and 128px icons in the `assets` folder.
+    5. **AC5-Manifest-Metadata**: The `manifest.json` contains the correct name, version, description, and icon references.
+    6. **AC6-Production-Build**: Running `npm run package` (or equivalent) successfully generates a `dist` folder and a `.zip` file containing the optimized, minified extension ready for upload.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      - path: docs/sprint-artifacts/tech-spec-epic-2.md
+        title: Epic Technical Specification: Core Stabilization &amp; Launch Prep
+        section: Detailed Design
+        snippet: "Epic 2 focuses on stabilizing the core functionality developed in Epic 1 and preparing the extension for its initial v1.0 launch. This involves critical performance optimizations to ensure smooth 60fps operation."
+      - path: docs/architecture.md
+        title: Technical Architecture Document
+        section: High-Level Architecture
+        snippet: "Performance (60fps): Ensure smooth scrolling while the grid is active, utilizing the 'Direct Child Injection' strategy. Simplicity: Use pure Vanilla JS, avoiding heavy runtime frameworks."
+    </docs>
+    <code>
+      - path: src/content/modules/ElementSelector.js
+        kind: module
+        symbol: ElementSelector
+        lines: 1-203
+        reason: Needs refactoring to use requestAnimationFrame for throttling mousemove events.
+      - path: src/content/modules/InspectorController.js
+        kind: module
+        symbol: InspectorController
+        lines: 1-223
+        reason: Needs comprehensive deactivate() method for cleanup and lifecycle management.
+      - path: src/content/modules/GridManager.js
+        kind: module
+        symbol: GridManager
+        lines: 1-207
+        reason: Needs validation of scroll handling and potential resize listener implementation.
+      - path: src/manifest.js
+        kind: config
+        symbol: default
+        lines: 1-39
+        reason: Needs update with full metadata and icon paths.
+    </code>
+    <dependencies>
+      - vite: ^5.4.21 (Build tool)
+      - @crxjs/vite-plugin: ^2.2.1 (Manifest handling)
+      - zip: (New dependency needed for packaging)
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - **Performance**: Must maintain 60fps during interactions. Use requestAnimationFrame.
+    - **Memory**: Zero memory leaks. All listeners and DOM nodes must be removed on deactivation.
+    - **Tech Stack**: Vanilla JS only. No external runtime libraries.
+    - **Build**: Output must be a valid Chrome Extension zip file.
+  </constraints>
+
+  <interfaces>
+    - name: requestAnimationFrame
+      kind: Browser API
+      signature: window.requestAnimationFrame(callback)
+      path: N/A
+    - name: removeEventListener
+      kind: Browser API
+      signature: EventTarget.removeEventListener(type, listener)
+      path: N/A
+    - name: ResizeObserver
+      kind: Browser API
+      signature: new ResizeObserver(callback)
+      path: N/A
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual testing is the primary validation method. Performance should be verified using Chrome DevTools Performance tab (no long tasks). Memory leaks should be verified using Heap Snapshots (no detached DOM nodes).
+    </standards>
+    <locations>
+      - MANUAL_TESTING.md
+    </locations>
+    <ideas>
+      - Performance: Rapidly move mouse over elements and verify 60fps.
+      - Memory: Toggle extension on/off 10 times and check heap size.
+      - Resize: Lock grid to an element and resize window; grid should stay aligned.
+      - Build: Unzip the production artifact and load it into Chrome to verify icons and metadata.
+    </ideas>
+  </tests>
+</story-context>

@@ -504,6 +504,88 @@
 
 ---
 
+---
+
+## Story 2.1: Performance & Polish Tests
+
+### ✅ TEST 41: Performance - 60fps Throttling (AC1)
+
+**Steps:**
+1. Open Chrome DevTools → Performance tab
+2. Start recording
+3. Rapidly move mouse over various elements for 5 seconds (triggering highlights)
+4. Stop recording
+5. Analyze "Main" thread activity
+6. Verify function calls are grouped/spaced by Animation Frame (approx 16.6ms)
+7. Check for "Long Task" warnings (red triangles) - should be none/minimal
+
+**Expected:**
+- No visual lag
+- Frame rate stays near 60fps
+- `handleHover` calls synchronized with Frame Firing
+
+**Result:** [ ] PASS [ ] FAIL
+
+---
+
+### ✅ TEST 42: Scroll & Resize Stability (AC2)
+
+**Steps:**
+1. Lock grid to an element
+2. Scroll page up/down → Grid should stick to element
+3. Resize browser window → Grid should stay aligned to element
+4. Verify grid dimensions update if element size changes (responsive layout)
+
+**Expected:**
+- Grid overlay moves perfectly with element
+- No "drifting" or offset issues during scroll/resize
+
+**Result:** [ ] PASS [ ] FAIL
+
+---
+
+### ✅ TEST 43: Memory Leak - Cleanup (AC3)
+
+**Steps:**
+1. Open Chrome DevTools → Memory tab
+2. Take Heap Snapshot (Baseline)
+3. Toggle Inspector ON/OFF 10 times
+4. Lock/Unlock grid 10 times
+5. Take Heap Snapshot (After)
+6. Compare snapshots
+7. Filter for `ElementSelector`, `GridManager`, `InspectorController`, or detached DOM nodes
+
+**Expected:**
+- No significant increase in memory usage
+- No accumulation of detached DOM nodes
+- Event listeners count returns to baseline (check in Elements → Event Listeners)
+
+**Result:** [ ] PASS [ ] FAIL
+
+---
+
+### ✅ TEST 44: Build & Assets (AC4, AC5, AC6)
+
+**Steps:**
+1. Run `npm run package`
+2. Verify `dist.zip` is created
+3. Unzip `dist.zip`
+4. Open Chrome → Extensions → Load Unpacked → Select unzipped folder
+5. Verify:
+   - Extension loads without errors
+   - Version is 1.0.0
+   - Description is updated
+   - Correct icon appears in toolbar
+
+**Expected:**
+- Valid zip file
+- Correct metadata and icons
+- Functional extension from production build
+
+**Result:** [ ] PASS [ ] FAIL
+
+---
+
 ## Story 1.2: Element Discovery & Highlighting Tests
 
 ### ✅ TEST 1-5: Basic Hover (AC1-AC4)
@@ -633,6 +715,13 @@ Before marking story as "Done":
 - [ ] Edge cases pass: Z-index, pointer-events override (Tests 35-36)
 - [ ] Accessibility: Keyboard navigation works (Test 37)
 - [ ] Cross-browser: Chrome/Edge/Brave consistent (Tests 38-40)
+
+### Story 2.1 (Performance & Polish):
+- [ ] Performance: 60fps maintained (Test 41)
+- [ ] Scroll/Resize: Grid stays aligned (Test 42)
+- [ ] Memory: No leaks after toggle cycles (Test 43)
+- [ ] Build: `npm run package` creates valid zip (Test 44)
+- [ ] Assets: Icons and metadata correct (Test 44)
 
 ### General:
 - [ ] No console errors

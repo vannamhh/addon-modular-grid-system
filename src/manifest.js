@@ -1,8 +1,8 @@
 export default {
   manifest_version: 3,
   name: 'WP 14px Rhythm Inspector',
-  version: '0.1.0',
-  description: 'Inspect 14px grid alignment on WordPress elements',
+  version: '1.0.0',
+  description: 'Inspect 14px grid alignment on WordPress elements. Features 60fps performance, clean lifecycle management, and zero memory leaks.',
   
   permissions: ['activeTab', 'storage'],
   

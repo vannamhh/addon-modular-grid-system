@@ -23,6 +23,12 @@ class InspectorController {
     
     /** @type {GridManager|null} Grid manager instance */
     this.gridManager = null;
+    
+    // Bind methods
+    this.handleResize = this.handleResize.bind(this);
+    
+    /** @type {number|null} Resize rAF ID */
+    this.resizeRafId = null;
   }
   
   /**
@@ -145,12 +151,44 @@ class InspectorController {
     if (active) {
       // Enable element hover detection
       this.elementSelector?.enable();
+      // Add resize listener
+      window.addEventListener('resize', this.handleResize);
     } else {
-      // Disable hover detection and clear highlights
-      this.elementSelector?.disable();
-      
-      // Remove any active grid
-      this.unlock();
+      this.deactivate();
+    }
+  }
+  
+  /**
+   * Deactivate inspector and clean up resources
+   */
+  deactivate() {
+    this.isActive = false;
+    
+    // Disable hover detection
+    this.elementSelector?.disable();
+    
+    // Remove grid
+    this.unlock();
+    
+    // Remove resize listener
+    window.removeEventListener('resize', this.handleResize);
+    
+    // Cancel pending resize frame
+    if (this.resizeRafId) {
+      cancelAnimationFrame(this.resizeRafId);
+      this.resizeRafId = null;
+    }
+  }
+  
+  /**
+   * Handle window resize events
+   */
+  handleResize() {
+    if (this.resizeRafId === null) {
+      this.resizeRafId = requestAnimationFrame(() => {
+        this.gridManager?.update();
+        this.resizeRafId = null;
+      });
     }
   }
   
@@ -204,17 +242,9 @@ class InspectorController {
    * Cleanup all resources
    */
   destroy() {
-    // Remove grid if active
-    this.gridManager?.remove();
-    
-    // Disable element selector
-    this.elementSelector?.disable();
-    
-    // Clear references
+    this.deactivate();
     this.elementSelector = null;
     this.gridManager = null;
-    this.isActive = false;
-    this.lockedElement = null;
   }
 }
 

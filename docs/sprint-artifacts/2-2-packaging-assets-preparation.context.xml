@@ -1,0 +1,129 @@
+<story-context id="2-2-packaging-assets-preparation" v="1.0">
+  <metadata>
+    <epicId>epic-2</epicId>
+    <storyId>2-2</storyId>
+    <title>Packaging &amp; Assets Preparation</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMad Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-2-packaging-assets-preparation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Product Owner</asA>
+    <iWant>a complete set of installation files and image assets</iWant>
+    <soThat>I can upload to the Chrome Web Store or distribute to testers</soThat>
+    <tasks>
+      - [ ] Task 1 — Icon assets and references (AC: #1)
+        - [ ] 1.1: Produce or source PNG icons at 16, 32, 48, 128px and place in `src/assets/`.
+        - [ ] 1.2: Add file existence checks to build/packaging script to fail if assets missing.
+      - [ ] Task 2 — Manifest metadata and manifest verification (AC: #2)
+        - [ ] 2.1: Update `src/manifest.js` with complete metadata fields (name, description, version, icons).
+        - [ ] 2.2: Add automated check in package script that validates `dist/manifest.json` references icons and metadata.
+      - [ ] Task 3 — Packaging workflow and CI (AC: #3)
+        - [ ] 3.1: Ensure `npm run package` builds production bundle into `dist/` and produces a `.zip` artifact.
+        - [ ] 3.2: Replace system `zip` usage in `package` script with a cross-platform Node-based zip (CI friendly).
+        - [ ] 3.3: Add CI step verifying `dist.zip` contains manifest and icon assets.
+        - [ ] 3.4: Add packaging smoke test in `MANUAL_TESTING.md` describing verification steps for artifact contents.
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Complete set of standard icons (16, 32, 48, 128px) exist in `src/assets/` and are referenced in the build output.
+    2. `manifest.json` contains required metadata (name, description, version, icons) and references the provided assets.
+    3. `npm run package` (or equivalent) produces an optimized production build and a `.zip` artifact suitable for Chrome Web Store upload.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      - path: docs/prd/6. Epic Details.md
+        title: PRD - Epic Details (Epic 2)
+        section: 6.2.2 Story 2.2: Packaging & Assets Preparation
+        snippet: "Story 2.2 requires icon assets, a complete manifest.json and a packaging command to produce a zipped production build suitable for Chrome Web Store upload."
+      - path: docs/sprint-artifacts/tech-spec-epic-2.md
+        title: Epic 2 Technical Specification
+        section: Packaging
+        snippet: "Packaging: Configuration of manifest.json metadata and automated build script (`npm run package`) to produce a valid .zip artifact for the Chrome Web Store."
+      - path: MANUAL_TESTING.md
+        title: Manual Testing Guide
+        section: Packaging Verification
+        snippet: "Manual packaging checks exist: run `npm run package`, verify `dist.zip` created and manifest+icons present at root."
+      - path: docs/sprint-artifacts/2-1-performance-optimization-polish.md
+        title: Story 2.1 — Performance Optimization & Polish
+        section: Completion Notes
+        snippet: "Story 2.1 implemented packaging, manifest and icons; these files serve as canonical inputs for Story 2.2 packaging hardening and CI checks."
+      - path: docs/sprint-change-proposal-2025-11-25.md
+        title: Sprint Change Proposal — Epic 2 Restructuring
+        section: Artifact & Scope Adjustments
+        snippet: "Change proposal renumbered packaging & assets story to 2.2 and instructed to harden packaging scripts for release readiness."
+      - path: README.md
+        title: Project README
+        section: Packaging Notes
+        snippet: "Project README references packaging tasks and icons (check list entries for Story 2.2)."
+    </docs>
+    <code>
+      - path: package.json
+        kind: config
+        symbol: npm-scripts
+        lines: 1-40
+        reason: `package` script currently uses system `zip` to create `dist.zip` which is non-portable in CI environments.
+      - path: src/manifest.js
+        kind: config
+        symbol: default
+        lines: 1-40
+        reason: Manifest references icons in `src/assets/` and must be validated in the produced `dist/manifest.json`.
+      - path: src/assets/
+        kind: assets
+        symbol: icons
+        lines: n/a
+        reason: Icon image files exist and should be used as canonical packaging assets.
+      - path: src/assets/generate-icons.js
+        kind: script
+        symbol: generate-icons.js
+        lines: 1-200
+        reason: Script supports icon generation and may be part of a packaging pipeline or asset generation step.
+      - path: vite.config.js
+        kind: config
+        symbol: vite-config
+        lines: 1-200
+        reason: Build configuration used by `npm run build`; verify packaging output paths match `dist/` layout expected by packaging step.
+    </code>
+    <dependencies>
+      - vite: ^5.4.21 (Build tool)
+      - @crxjs/vite-plugin: ^2.2.1 (Manifest handling)
+      - zip: system utility currently used in `package` script (consider replacing with node package like `archiver` or `@zip`)
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Packaging must produce a Chrome Web Store compatible artifact: manifest.json at the archive root and required icons included.
+    - Keep build output in `dist/` and ensure minified production files are included and referenced correctly.
+    - CI-friendly packaging: avoid system-specific commands; prefer cross-platform node-based zipping.
+  </constraints>
+
+  <interfaces>
+    - name: npm run package
+      kind: npm-script
+      signature: npm run package -> builds and zips dist/ into dist.zip
+      path: package.json
+    - name: manifest.json
+      kind: config
+      signature: JSON file with manifest v3 fields (name, version, icons, permissions)
+      path: src/manifest.js
+  </interfaces>
+
+  <tests>
+    <standards>
+      Packaging validation should verify the presence of `dist/manifest.json` and icon files at the root of the zipped artifact. Add an automated step in CI that unzips `dist.zip` and asserts paths.
+    </standards>
+    <locations>
+      - MANUAL_TESTING.md
+      - package.json
+    </locations>
+    <ideas>
+      - CI check: Run `npm run package`, unzip `dist.zip` and assert `manifest.json` exists and that icon files from `src/assets/` are present in the archive root.
+      - Replace system `zip` with Node script (archiver/incubator) to ensure CI portability and cross-platform stability.
+      - Add small smoke test to confirm `dist/manifest.json` is valid JSON and contains the expected icon paths.
+    </ideas>
+  </tests>
+</story-context>

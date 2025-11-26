@@ -89,6 +89,29 @@ class GridManager {
   getGridHost() {
     return this.currentGridHost;
   }
+
+  /**
+   * Update grid position/dimensions (e.g. on window resize)
+   */
+  update() {
+    if (!this.isActive() || !this.targetElement) return;
+    
+    // Re-adjust positioning if needed (e.g. if element position type changed)
+    this.adjustElementPositioning(this.targetElement);
+    
+    // Update shadow host dimensions/offsets
+    const computedStyle = window.getComputedStyle(this.targetElement);
+    const borderTop = parseFloat(computedStyle.borderTopWidth) || 0;
+    const borderLeft = parseFloat(computedStyle.borderLeftWidth) || 0;
+    const borderRight = parseFloat(computedStyle.borderRightWidth) || 0;
+    const borderBottom = parseFloat(computedStyle.borderBottomWidth) || 0;
+    
+    const host = this.currentGridHost;
+    host.style.top = `-${borderTop}px`;
+    host.style.left = `-${borderLeft}px`;
+    host.style.right = `-${borderRight}px`;
+    host.style.bottom = `-${borderBottom}px`;
+  }
   
   /**
    * Adjust element positioning if static

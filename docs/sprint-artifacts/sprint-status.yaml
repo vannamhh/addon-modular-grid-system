@@ -44,11 +44,11 @@ development_status:
   epic-1-retrospective: optional
   
   epic-2: contexted
-  2-1-performance-optimization-polish: drafted
-  2-2-packaging-assets-preparation: backlog
+  2-1-performance-optimization-polish: done
+  2-2-packaging-assets-preparation: done
   epic-2-retrospective: optional
 
-  epic-3: backlog
+  epic-3: contexted
   3-1-global-toggle-shortcut: backlog
   3-2-custom-grid-settings-ui-persistence: backlog
   epic-3-retrospective: optional
