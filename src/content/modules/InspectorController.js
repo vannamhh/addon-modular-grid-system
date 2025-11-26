@@ -157,6 +157,16 @@ class InspectorController {
       this.deactivate();
     }
   }
+
+  /**
+   * Toggle the active state
+   * @returns {boolean} New active state
+   */
+  toggleActiveState() {
+    const newState = !this.isActive;
+    this.setActive(newState);
+    return newState;
+  }
   
   /**
    * Deactivate inspector and clean up resources

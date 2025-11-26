@@ -34,5 +34,15 @@ export default {
       js: ['src/content/index.js'],
       run_at: 'document_idle'
     }
-  ]
+  ],
+  
+  commands: {
+    'toggle-grid': {
+      suggested_key: {
+        default: 'Alt+Shift+G',
+        mac: 'Alt+Shift+G'
+      },
+      description: 'Toggle the Grid Inspector'
+    }
+  }
 };

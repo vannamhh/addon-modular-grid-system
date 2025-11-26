@@ -16,6 +16,9 @@ import InspectorController from './modules/InspectorController.js';
           const { active } = message.payload;
           InspectorController.setActive(active);
           sendResponse({ success: true });
+        } else if (message.type === 'TOGGLE_GRID') {
+          const newState = InspectorController.toggleActiveState();
+          sendResponse({ success: true, active: newState });
         } else {
           console.warn('Unknown message type:', message.type);
           sendResponse({ success: false, error: 'Unknown message type' });

@@ -13,3 +13,18 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 // Keep service worker minimal - no heavy logic
 // All core functionality lives in content script
+
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === 'toggle-grid') {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tab?.id) {
+        await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_GRID' });
+      }
+    } catch (error) {
+      // Ignore errors when sending to tabs that don't have content script
+      // or if the tab is restricted (e.g. chrome:// URLs)
+      console.debug('Failed to send toggle command:', error);
+    }
+  }
+});

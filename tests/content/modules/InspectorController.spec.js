@@ -328,6 +328,21 @@ describe('InspectorController', () => {
       expect(InspectorController.isActive).toBe(false);
     });
 
+    it('toggleActiveState() should toggle isActive and return new state', () => {
+      // Initial state false
+      expect(InspectorController.isActive).toBe(false);
+
+      // Toggle on
+      const newStateOn = InspectorController.toggleActiveState();
+      expect(newStateOn).toBe(true);
+      expect(InspectorController.isActive).toBe(true);
+
+      // Toggle off
+      const newStateOff = InspectorController.toggleActiveState();
+      expect(newStateOff).toBe(false);
+      expect(InspectorController.isActive).toBe(false);
+    });
+
     // TODO: Fix localStorage SecurityError in JSDOM
     it.skip('should maintain independent state properties', () => {
       const testElement = dom.window.document.createElement('div');

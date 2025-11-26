@@ -524,7 +524,7 @@
 - Frame rate stays near 60fps
 - `handleHover` calls synchronized with Frame Firing
 
-**Result:** [ ] PASS [ ] FAIL
+**Result:** [x] PASS [ ] FAIL
 
 ---
 
@@ -728,3 +728,28 @@ Before marking story as "Done":
 - [ ] test-page.html Section 10 functions correctly
 - [ ] MANUAL_TESTING.md updated with Story 1.4 procedures
 - [ ] All task checkboxes marked in story file
+
+## Story 3.1: Global Toggle Shortcut
+
+### ✅ TEST 50: Keyboard Shortcut Toggle (AC1, AC2, AC3)
+
+**Steps:**
+1. Build and load the extension into Chrome (`npm run build` → load `dist/`).
+2. Open any page (e.g., `test-page.html`) and ensure extension is active.
+3. Ensure grid is currently OFF (no cyan grid overlay visible).
+4. Press the default shortcut: `Alt+Shift+G` (Windows/Linux) or `Option+Shift+G` (Mac).
+   - Expect: grid turns ON immediately and hover highlighting resumes.
+5. Press the shortcut again.
+   - Expect: grid turns OFF immediately and any highlights are removed.
+
+**Focus Tests:**
+1. Click into a text input or focus a contentEditable area.
+2. Trigger the shortcut `Alt+Shift+G` / `Option+Shift+G`.
+   - Expect: Toggle still works regardless of focus (Chrome window active).
+
+**Conflict Check:**
+1. Verify the chosen shortcut doesn't conflict with common Chrome/OS shortcuts (DevTools, extensions shortcuts).
+2. If conflict observed, document and propose alternate mapping.
+
+**Result:** [ ] PASS [ ] FAIL
+

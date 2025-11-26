@@ -1,0 +1,117 @@
+<story-context id="docs/sprint-artifacts/3-1-global-toggle-shortcut.context.xml" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.1</storyId>
+    <title>Global Toggle Shortcut</title>
+    <status>done</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-1-global-toggle-shortcut.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>User</asA>
+    <iWant>to be able to toggle the grid on/off using a keyboard shortcut</iWant>
+    <soThat>I can quickly check alignment without moving my mouse to the toolbar</soThat>
+    <tasks>
+      - Task 1 — Manifest Configuration (AC: #1)
+      - Task 2 — Background Script Handler (AC: #1, #2)
+      - Task 3 — Content Script Toggle Logic (AC: #3)
+      - Task 4 — Verification & Testing
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. **Default Shortcut:** Define a default shortcut `Alt+Shift+G` (or `Option+Shift+G` on Mac) that toggles the extension's active state.
+    2. **Global Access:** The shortcut works regardless of which element has focus, as long as the Chrome window is active.
+    3. **Immediate Feedback:** Toggling "off" removes the grid and any active highlight outlines immediately. Toggling "on" re-enables the inspection mode (highlighting on hover).
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      - path: docs/sprint-artifacts/tech-spec-epic-3.md
+        title: Epic Technical Specification: Configuration & Workflow Optimization
+        section: Detailed Design
+        snippet: "Global Shortcut: Implementation of a keyboard shortcut (e.g., Ctrl+Shift+G) to toggle the extension's active state. Background Service Worker will handle the chrome.commands event."
+      
+      - path: docs/prd.md
+        title: Product Requirements Document
+        section: 6.3.1 Story 3.1: Global Toggle Shortcut
+        snippet: "User Story: As a User, I want to be able to toggle the grid on/off using a keyboard shortcut so that I can quickly check alignment without moving my mouse to the toolbar."
+      
+      - path: docs/architecture.md
+        title: Technical Architecture Document
+        section: High-Level Architecture
+        snippet: "The system follows the standard Chrome Extension Manifest V3 model. The core logic is centralized in the Content Script, while the Popup and Background play minimal support roles."
+    </docs>
+    
+    <code>
+      - path: src/manifest.js
+        kind: config
+        symbol: manifest
+        lines: 1-38
+        reason: Needs update to include 'commands' key for the global shortcut definition.
+      
+      - path: src/background/index.js
+        kind: service-worker
+        symbol: chrome.commands.onCommand
+        lines: 1-16
+        reason: Needs listener for 'toggle-grid' command to send message to content script.
+      
+      - path: src/content/index.js
+        kind: entry-point
+        symbol: chrome.runtime.onMessage
+        lines: 12-30
+        reason: Entry point for handling messages. Needs to handle 'TOGGLE_GRID' message.
+      
+      - path: src/content/modules/InspectorController.js
+        kind: controller
+        symbol: InspectorController
+        lines: 13-253
+        reason: Central controller managing active state. Needs 'toggleActiveState()' method or logic to handle toggle.
+    </code>
+    
+    <dependencies>
+      - ecosystem: chrome-extension
+        packages:
+          - chrome.commands (API)
+          - chrome.runtime (API)
+          - chrome.tabs (API)
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Manifest V3 architecture required.
+    - Background script cannot directly manipulate DOM; must message content script.
+    - Content scripts cannot listen to chrome.commands directly.
+    - Vanilla JS only, no heavy frameworks.
+  </constraints>
+
+  <interfaces>
+    - name: TOGGLE_GRID
+      kind: Internal Message
+      signature: { type: 'TOGGLE_GRID' }
+      path: src/content/index.js
+    
+    - name: chrome.commands.onCommand
+      kind: Chrome API
+      signature: callback(command: string)
+      path: Background Service Worker
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual verification is primary for UI/interaction. Unit tests for logic where applicable (e.g., state toggling).
+    </standards>
+    <locations>
+      - MANUAL_TESTING.md
+      - tests/
+    </locations>
+    <ideas>
+      - Verify shortcut works on various sites.
+      - Verify shortcut works when focus is in different inputs.
+      - Verify toggle OFF removes grid immediately.
+      - Verify toggle ON restores previous state or enables selection.
+    </ideas>
+  </tests>
+</story-context>
