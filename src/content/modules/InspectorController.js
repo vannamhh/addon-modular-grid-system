@@ -8,7 +8,6 @@ import GridManager from './GridManager.js';
 import ConfigManager from './ConfigManager.js';
 
 // Storage keys
-const STORAGE_KEY_ACTIVE = 'wp-rhythm-inspector-active';
 const STORAGE_KEY_LOCKED_XPATH = 'wp-rhythm-inspector-locked-xpath';
 
 class InspectorController {
@@ -46,6 +45,9 @@ class InspectorController {
     ConfigManager.subscribe((settings) => {
       this.gridManager.updateConfig(settings);
     });
+
+    // Listen for storage changes to sync active state across tabs
+    this.setupStorageListener();
     
     // Register element selection callback
     this.elementSelector.onElementSelected((element) => {
@@ -55,20 +57,37 @@ class InspectorController {
     // Restore previous state if exists
     this.restoreState();
   }
+
+  /**
+   * Listen for storage changes to sync state
+   * @private
+   */
+  setupStorageListener() {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.isActive) {
+        const newValue = changes.isActive.newValue;
+        // Only update if different to avoid loops
+        if (this.isActive !== newValue) {
+          this.setActive(newValue, false); // false = do not persist back
+        }
+      }
+    });
+  }
   
   /**
-   * Restore state from localStorage after page reload
+   * Restore state from storage after page reload
    * @private
    */
   restoreState() {
-    try {
-      const wasActive = localStorage.getItem(STORAGE_KEY_ACTIVE) === 'true';
-      const lockedXPath = localStorage.getItem(STORAGE_KEY_LOCKED_XPATH);
+    // Restore Active State from Chrome Storage (Global)
+    chrome.storage.local.get(['isActive'], (result) => {
+      const wasActive = result.isActive;
       
       if (wasActive) {
-        this.setActive(true);
+        this.setActive(true, false); // Don't persist, just activate
         
-        // Restore locked element if it was locked
+        // Restore locked element if it was locked (Page specific, from localStorage)
+        const lockedXPath = localStorage.getItem(STORAGE_KEY_LOCKED_XPATH);
         if (lockedXPath) {
           const element = this.getElementByXPath(lockedXPath);
           if (element) {
@@ -76,9 +95,7 @@ class InspectorController {
           }
         }
       }
-    } catch (error) {
-      console.warn('Failed to restore inspector state:', error);
-    }
+    });
   }
   
   /**
@@ -143,15 +160,16 @@ class InspectorController {
   /**
    * Activate or deactivate the extension
    * @param {boolean} active - True to activate, false to deactivate
+   * @param {boolean} [persist=true] - Whether to save state to storage
    */
-  setActive(active) {
+  setActive(active, persist = true) {
     this.isActive = active;
     
     // Persist active state
-    try {
-      localStorage.setItem(STORAGE_KEY_ACTIVE, active.toString());
-    } catch (error) {
-      console.warn('Failed to save active state:', error);
+    if (persist) {
+      chrome.storage.local.set({ isActive: active }).catch(err => {
+        console.warn('Failed to save active state:', err);
+      });
     }
     
     if (active) {

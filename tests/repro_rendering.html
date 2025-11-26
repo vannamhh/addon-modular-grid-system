@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Rendering Repro</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 50px;
+        }
+
+        .test-case {
+            width: 300px;
+            border: 1px solid #ccc;
+        }
+
+        .label {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .content {
+            height: 50000px;
+            /* 50k pixels tall */
+            position: relative;
+        }
+
+        /* OLD METHOD: CSS Gradients */
+        .old-method {
+            position: absolute;
+            inset: 0;
+            opacity: 0.5;
+            pointer-events: none;
+            background-image:
+                repeating-linear-gradient(to bottom,
+                    #00FFFF 0 1px,
+                    transparent 1px 14px),
+                repeating-linear-gradient(to right,
+                    #00FFFF 0 1px,
+                    transparent 1px 14px);
+        }
+
+        /* NEW METHOD: SVG Pattern */
+        .new-method {
+            position: absolute;
+            inset: 0;
+            opacity: 0.5;
+            pointer-events: none;
+            /* Encoded SVG for 14px grid with 1px Cyan line */
+            background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2214%22%20height%3D%2214%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200h14v1H0zM0%200v14h1V0z%22%20fill%3D%22%2300FFFF%22%2F%3E%3C%2Fsvg%3E');
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Grid Rendering Stress Test (Height: 50,000px)</h1>
+    <p>Scroll down to the bottom to check for rendering glitches.</p>
+
+    <div class="container">
+        <div class="test-case">
+            <div class="label">Old Method (CSS Gradient)</div>
+            <div class="content">
+                <div class="old-method"></div>
+            </div>
+        </div>
+
+        <div class="test-case">
+            <div class="label">New Method (SVG Pattern)</div>
+            <div class="content">
+                <div class="new-method"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

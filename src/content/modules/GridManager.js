@@ -232,21 +232,25 @@ class GridManager {
    */
   generateGridCSS() {
     const { size, color } = this.config;
+    
+    // Create SVG pattern: "L" shape (top and left borders)
+    // This repeats to form the grid
+    const svg = `
+      <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h${size}v${LINE_WIDTH}H0zM0 0v${size}h${LINE_WIDTH}V0z" fill="${color}"/>
+      </svg>
+    `.trim();
+
+    // Encode for Data URI
+    const encodedSvg = encodeURIComponent(svg)
+      .replace(/'/g, '%27')
+      .replace(/"/g, '%22');
+
     return `
       .grid-pattern {
         position: absolute;
         inset: 0;
-        background-image:
-          repeating-linear-gradient(
-            to bottom,
-            ${color} 0 ${LINE_WIDTH}px,
-            transparent ${LINE_WIDTH}px ${size}px
-          ),
-          repeating-linear-gradient(
-            to right,
-            ${color} 0 ${LINE_WIDTH}px,
-            transparent ${LINE_WIDTH}px ${size}px
-          );
+        background-image: url('data:image/svg+xml;charset=utf-8,${encodedSvg}');
         opacity: ${GRID_OPACITY};
         pointer-events: none;
       }

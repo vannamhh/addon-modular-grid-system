@@ -32,8 +32,6 @@ import InspectorController from './modules/InspectorController.js';
       return true;
     });
     
-    console.log('WP Inspector Ready');
-    
   } catch (error) {
     console.error('WP Inspector initialization failed:', error);
   }
