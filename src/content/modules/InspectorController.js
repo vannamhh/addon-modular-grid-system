@@ -60,42 +60,36 @@ class InspectorController {
 
   /**
    * Listen for storage changes to sync state
+   * NOTE: With per-tab state management, we no longer auto-sync across tabs.
+   * Each tab manages its own state independently.
    * @private
    */
   setupStorageListener() {
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area === 'local' && changes.isActive) {
-        const newValue = changes.isActive.newValue;
-        // Only update if different to avoid loops
-        if (this.isActive !== newValue) {
-          this.setActive(newValue, false); // false = do not persist back
-        }
-      }
-    });
+    // Storage listener is no longer needed for tab-specific state
+    // Each tab's state is managed independently via messages from popup
   }
   
   /**
    * Restore state from storage after page reload
+   * Uses page-specific localStorage for locked element (persists on refresh)
    * @private
    */
   restoreState() {
-    // Restore Active State from Chrome Storage (Global)
-    chrome.storage.local.get(['isActive'], (result) => {
-      const wasActive = result.isActive;
-      
-      if (wasActive) {
-        this.setActive(true, false); // Don't persist, just activate
-        
-        // Restore locked element if it was locked (Page specific, from localStorage)
-        const lockedXPath = localStorage.getItem(STORAGE_KEY_LOCKED_XPATH);
-        if (lockedXPath) {
-          const element = this.getElementByXPath(lockedXPath);
-          if (element) {
-            this.lockElement(element);
-          }
-        }
+    // Check if there's a locked element saved for this specific page
+    const lockedXPath = localStorage.getItem(STORAGE_KEY_LOCKED_XPATH);
+    if (lockedXPath) {
+      // If there was a locked element, restore the inspector state
+      const element = this.getElementByXPath(lockedXPath);
+      if (element) {
+        this.setActive(true); // Activate for this page
+        this.lockElement(element);
+      } else {
+        // Element no longer exists, clear the saved xpath
+        localStorage.removeItem(STORAGE_KEY_LOCKED_XPATH);
       }
-    });
+    }
+    // Note: If no locked element, inspector starts inactive
+    // User must click Activate in popup for each tab
   }
   
   /**
@@ -159,18 +153,11 @@ class InspectorController {
   
   /**
    * Activate or deactivate the extension
+   * State is managed per-tab by the popup, not globally
    * @param {boolean} active - True to activate, false to deactivate
-   * @param {boolean} [persist=true] - Whether to save state to storage
    */
-  setActive(active, persist = true) {
+  setActive(active) {
     this.isActive = active;
-    
-    // Persist active state
-    if (persist) {
-      chrome.storage.local.set({ isActive: active }).catch(err => {
-        console.warn('Failed to save active state:', err);
-      });
-    }
     
     if (active) {
       // Enable element hover detection
@@ -183,7 +170,7 @@ class InspectorController {
   }
 
   /**
-   * Toggle the active state
+   * Toggle the active state (called from keyboard shortcut)
    * @returns {boolean} New active state
    */
   toggleActiveState() {

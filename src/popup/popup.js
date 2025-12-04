@@ -12,6 +12,7 @@ const saveStatus = document.getElementById('saveStatus');
 
 // State
 let isActive = false;
+let currentTabId = null;
 
 // --- Inspector Toggle Logic ---
 
@@ -24,17 +25,20 @@ toggleBtn.addEventListener('click', async () => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab) {
+      currentTabId = tab.id;
       await chrome.tabs.sendMessage(tab.id, {
         type: 'TOGGLE_INSPECTOR',
         payload: { active: isActive }
       });
+      
+      // Persist state PER TAB
+      const tabStates = (await chrome.storage.local.get(['tabStates']))?.tabStates || {};
+      tabStates[tab.id] = { isActive };
+      await chrome.storage.local.set({ tabStates });
     }
   } catch (error) {
     console.log('Content script not ready yet or no active tab:', error);
   }
-  
-  // Persist state
-  await chrome.storage.local.set({ isActive });
 });
 
 async function updateToggleState(active) {
@@ -100,12 +104,21 @@ function showStatus(msg, success) {
 
 (async () => {
   try {
-    // Load Toggle State
-    const localResult = await chrome.storage.local.get(['isActive']);
-    isActive = localResult.isActive || false;
+    // Get current tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    currentTabId = tab?.id;
+    
+    // Load Toggle State for THIS TAB
+    if (currentTabId) {
+      const localResult = await chrome.storage.local.get(['tabStates']);
+      const tabStates = localResult.tabStates || {};
+      isActive = tabStates[currentTabId]?.isActive || false;
+    } else {
+      isActive = false;
+    }
     await updateToggleState(isActive);
 
-    // Load Settings
+    // Load Settings (these are global)
     const syncResult = await chrome.storage.sync.get(['gridSettings']);
     const settings = syncResult.gridSettings || { size: 14, color: '#00FFFF' };
     
