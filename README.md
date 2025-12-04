@@ -145,17 +145,21 @@ Tests cover:
 
 ## Roadmap
 
-### Epic 1: Foundation & Core Grid Injection (Current)
+### Epic 1: Foundation & Core Grid Injection (Completed)
 - [x] Story 1.1: Project Scaffolding & Manifest V3 Setup
-- [ ] Story 1.2: Element Discovery & Highlighting
-- [ ] Story 1.3: Grid Overlay Injection ("The Lock")
-- [ ] Story 1.4: Click-Through Transparency
+- [x] Story 1.2: Element Discovery & Highlighting
+- [x] Story 1.3: Grid Overlay Injection ("The Lock")
+- [x] Story 1.4: Click-Through Transparency
 
-### Epic 2: Measurement & Performance (Planned)
-- [ ] Story 2.1: Measurement Core Logic
-- [ ] Story 2.2: Measurement Tooltip UI
-- [ ] Story 2.3: Performance Optimization
-- [ ] Story 2.4: Packaging & Store Assets
+### Epic 2: Measurement & Performance (Completed)
+- [x] Story 2.1: Performance Optimization (previously 2.3)
+- [x] Story 2.2: Packaging & Store Assets (previously 2.4)
+
+Note: The original Measurement stories (former 2.1 & 2.2) were intentionally removed from the roadmap — the remaining work for Epic 2 has been completed and renumbered as shown above.
+
+### Epic 3: Developer Experience & Persistence (Completed)
+- [x] Story 3.1: Global toggle shortcut
+- [x] Story 3.2: Custom grid settings UI + persistence
 
 ## Contributing
 
@@ -174,6 +178,10 @@ MIT License - See LICENSE file for details
 
 ---
 
-**Version**: 0.1.0  
-**Status**: In Development (Story 1.1 Complete)  
-**Last Updated**: 2025-11-22
+**Version**: 0.2.0  
+**Status**: In Development (Epics 1–3 delivered; continuing polish and backlog items)  
+**Last Updated**: 2025-11-27
+
+Notes:
+- Retrospective for Epic 3 has been completed and saved to `docs/sprint-artifacts`.
+- Canonical sprint status and story tracking are in `docs/sprint-artifacts/sprint-status.yaml`.
